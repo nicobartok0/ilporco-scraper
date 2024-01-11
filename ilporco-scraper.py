@@ -3,6 +3,7 @@ from valuador import Valuador_Maxiconsumo
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import sys, os
 
 
 # Se genera el elemento base de tkinter
@@ -39,6 +40,9 @@ def boton():
     # Obtenemos los precios usando el valuador
     precios = valuador.get_prices(progressbar=barra, progresswindow=progresswindow)
     scanner.actualizar_precios(precios)
+    progresswindow.destroy()
+    nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+    os.system(f'start excel.exe "{os.getcwd()}/{nuevonombre}"')
     
 
 # -- Creación de widgets
