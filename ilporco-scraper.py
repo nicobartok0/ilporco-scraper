@@ -24,7 +24,7 @@ def boton():
     progresswindow = Toplevel(root)
     progresswindow.title('Progreso')
     progresswindow.geometry('200x200')
-    ttk.Label(text='Espere mientras se buscan los datos...').grid(column=0, row=0)
+    ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
     barra = ttk.Progressbar(progresswindow, mode='determinate')
     barra.grid(column=0, row=1, padx=10, pady=10)
 
