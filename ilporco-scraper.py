@@ -2,13 +2,13 @@ from operador import Operador
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-import sys, os
+import os
 
 
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("500x200")
-root.title('Il Porco Scraper')
+root.title('Il Porco Scraper 2.0')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
