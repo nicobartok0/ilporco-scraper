@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 class Valuador_Maxiconsumo:
     def __init__(self, sess_id): 
         self.precios = []
+        self.contador = 0
         self.cookies = {
             'mage-banners-cache-storage': '%7B%7D',
             'form_key': 'MIEm9usykOi9e32h',
@@ -53,7 +54,8 @@ class Valuador_Maxiconsumo:
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
         }
 
-    def get_prices(self, maxiconsumo):
+    # Método para obtener los precios de los artículos de maxiconsumo
+    def get_prices(self, maxiconsumo, progress, progresswindow):
         self.sku_list = []
         for key in maxiconsumo.keys():
             self.sku_list.append(maxiconsumo[key][1])
@@ -77,9 +79,15 @@ class Valuador_Maxiconsumo:
             try:
                 precio = precios[1].text
                 self.precios.append(precio)
+                progresswindow.update_idletasks()
+                progress.set(self.contador)
+                self.contador+=1
                 
             except:
                 self.precios.append('Sin precio')
+                progresswindow.update_idletasks()
+                progress.set(self.contador)
+                self.contador+=1
         count = 0
         for key in maxiconsumo.keys():
             maxiconsumo[key].append('')
@@ -102,19 +110,24 @@ class Valuador_Andina:
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         self.url = 'http://andinapedidos.com.ar/mayor'
         self.precios = []
+        self.contador = 0
 
-    def get_prices(self, andina):
+    # Método para obtener los precios de los articulos de andina
+    def get_prices(self, andina, progress, progresswindow, contador):
         self.sku_list = []
         for key in andina.keys():
             self.sku_list.append(andina[key][3])
         self.driver.get(self.url)
         for key in self.sku_list:
+            contador+=1
             if key != '':    
                 self.driver.find_element(by='xpath', value='//*[@id="buscador"]').send_keys(key)
                 time.sleep(3)
                 try:
                     precio = self.driver.find_element(by='xpath', value='//*[@id="cat_xxx"]/ul/li/div/div[2]/div/div/div[1]/h5')
                     self.precios.append(precio.text)
+                    progresswindow.update_idletasks()
+                    progress.set(contador)
                 except:
                     self.precios.append('Sin precio')
                 self.driver.find_element(by='xpath', value='//*[@id="buscador"]').clear()

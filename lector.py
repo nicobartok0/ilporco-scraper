@@ -33,6 +33,7 @@ class Lector:
                 self.name_list.append(valor)
         return self.name_list
     
+    # Método que toma los códigos de los artículos de la segunda columna del excel.
     def obtener_codigo(self):
         for column_data in self.ws['B']:
             if column_data.value != None:
@@ -40,6 +41,7 @@ class Lector:
                 self.code_list.append(valor)
         return self.code_list
     
+    # Método que toma los nombres de los proveedores de los artículos de la séptima columna del excel.
     def obtener_proveedor(self):
         for column_data in self.ws['G']:
             if column_data.value != None:
@@ -47,7 +49,7 @@ class Lector:
                 self.prov_list.append(valor)
         return self.prov_list
 
-    
+    # Método que toma los datos utilizando los métodos anteriores
     def obtener_datos(self):
         dataline = []
         Lector.obtener_skus(self)
@@ -63,6 +65,7 @@ class Lector:
 
         return self.datos
 
+    # Método que separa por proveedor toda la información del excel
     def separar_por_proveedor(self):
         self.maxiconsumo = {}
         self.andina = {}
@@ -77,6 +80,7 @@ class Lector:
 
         return self.maxiconsumo, self.andina, self.nodata
 
+    # Método que le asigna a cada artículo de Andina un código interno de la tabla intermedia
     def intercode_andina(self, andina):
         codes = []
         and_codes = []

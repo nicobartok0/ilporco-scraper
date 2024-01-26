@@ -21,16 +21,20 @@ nombre_label = tk.StringVar()
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
     progresswindow = Toplevel(root)
+    progresswindow.update_idletasks()
     progresswindow.title('Progreso')
-    progresswindow.geometry('200x400')
+    progresswindow.geometry('420x100')
     ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
-    barra = ttk.Progressbar(progresswindow, mode='determinate')
-    barra.grid(column=0, row=1, padx=10, pady=10)
-
+    nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+    progress = IntVar()
     # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
     operador = Operador(maxiconsumo_sess_id=str(sess_id_label.get()), nombre_excel=str(nombre_label.get()))
+    barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
+    barra.grid(column=0, row=1, padx=10, pady=10)
+
     # Ejecutamos la obtención de precios desde el operador
-    operador.actualizar_precios()
+    
+    operador.actualizar_precios(progress, progresswindow)
     progresswindow.destroy()
     nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
     os.system(f'start excel.exe "{os.getcwd()}/{nuevonombre}"')
