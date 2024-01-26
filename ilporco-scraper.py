@@ -1,5 +1,4 @@
-from lector import Lector
-from valuador import Valuador_Maxiconsumo
+from operador import Operador
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -23,27 +22,19 @@ nombre_label = tk.StringVar()
 def boton():
     progresswindow = Toplevel(root)
     progresswindow.title('Progreso')
-    progresswindow.geometry('200x200')
+    progresswindow.geometry('200x400')
     ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
     barra = ttk.Progressbar(progresswindow, mode='determinate')
     barra.grid(column=0, row=1, padx=10, pady=10)
 
-    # Hacemos un scanner del excel y le damos el nombre del archivo.
-    scanner = Lector(str(nombre_label.get()))
-
-    # Obtenemos la lista de SKUs y Nombres de los artículos a través del Scanner.
-    skus = scanner.obtener_skus()
-
-    # Hacemos un valuador y le damos el id de sesión de Maxiconsumo
-    valuador = Valuador_Maxiconsumo(sess_id=str(sess_id_label.get()), sku_list=skus)
-
-    # Obtenemos los precios usando el valuador
-    precios = valuador.get_prices(progressbar=barra, progresswindow=progresswindow)
-    scanner.actualizar_precios(precios)
+    # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
+    operador = Operador(maxiconsumo_sess_id=str(sess_id_label.get()), nombre_excel=str(nombre_label.get()))
+    # Ejecutamos la obtención de precios desde el operador
+    operador.actualizar_precios()
     progresswindow.destroy()
     nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
     os.system(f'start excel.exe "{os.getcwd()}/{nuevonombre}"')
-    
+
 
 # -- Creación de widgets
     

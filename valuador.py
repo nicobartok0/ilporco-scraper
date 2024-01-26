@@ -1,13 +1,17 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 from tkinter import ttk
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Creamos nuestro Valuador que recibe como parámetro la lista de todos los SKUs y 
 # el ID De la sesión de Maxiconsumo
 
 class Valuador_Maxiconsumo:
-    def __init__(self, sku_list, sess_id):
-        self.sku_list = sku_list  
+    def __init__(self, sess_id): 
         self.precios = []
         self.cookies = {
             'mage-banners-cache-storage': '%7B%7D',
@@ -49,7 +53,10 @@ class Valuador_Maxiconsumo:
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
         }
 
-    def get_prices(self, progressbar, progresswindow):
+    def get_prices(self, maxiconsumo):
+        self.sku_list = []
+        for key in maxiconsumo.keys():
+            self.sku_list.append(maxiconsumo[key][1])
         total_skus = len(self.sku_list)
         count=0
         for sku in self.sku_list:
@@ -66,15 +73,19 @@ class Valuador_Maxiconsumo:
 
             soup = BeautifulSoup(response.content, 'html.parser')
             precios = soup.find_all('span', {'class': 'price'})
+
             try:
-                self.precios.append(precios[1].text)
+                precio = precios[1].text
+                self.precios.append(precio)
+                
             except:
                 self.precios.append('Sin precio')
-            carga = count*100/total_skus
-            progressbar['value']=carga
-            progresswindow.update_idletasks()
-
-        return self.precios
+        count = 0
+        for key in maxiconsumo.keys():
+            maxiconsumo[key].append('')
+            maxiconsumo[key].append(self.precios[count])
+            count+=1
+        return maxiconsumo
 
     def get_cookies(self):
         print(self.cookies)
@@ -82,5 +93,40 @@ class Valuador_Maxiconsumo:
     def get_headers(self):
         print(self.headers)
 
+class Valuador_Andina:
+    def __init__(self):
+        chrome_options = Options()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        self.url = 'http://andinapedidos.com.ar/mayor'
+        self.precios = []
+
+    def get_prices(self, andina):
+        self.sku_list = []
+        for key in andina.keys():
+            self.sku_list.append(andina[key][3])
+        self.driver.get(self.url)
+        for key in self.sku_list:
+            if key != '':    
+                self.driver.find_element(by='xpath', value='//*[@id="buscador"]').send_keys(key)
+                time.sleep(3)
+                try:
+                    precio = self.driver.find_element(by='xpath', value='//*[@id="cat_xxx"]/ul/li/div/div[2]/div/div/div[1]/h5')
+                    self.precios.append(precio.text)
+                except:
+                    self.precios.append('Sin precio')
+                self.driver.find_element(by='xpath', value='//*[@id="buscador"]').clear()
+            else:
+                self.precios.append('Sin precio')
+        count = 0
+        for key in andina.keys():
+            andina[key].append(self.precios[count])
+            count+=1
+        return andina
+
+    
 
 
+    
