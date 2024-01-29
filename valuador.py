@@ -55,7 +55,7 @@ class Valuador_Maxiconsumo:
         }
 
     # Método para obtener los precios de los artículos de maxiconsumo
-    def get_prices(self, maxiconsumo, progress, progresswindow):
+    def get_prices(self, maxiconsumo, progress):
         self.sku_list = []
         for key in maxiconsumo.keys():
             self.sku_list.append(maxiconsumo[key][1])
@@ -79,13 +79,11 @@ class Valuador_Maxiconsumo:
             try:
                 precio = precios[1].text
                 self.precios.append(precio)
-                progresswindow.update_idletasks()
                 progress.set(self.contador)
                 self.contador+=1
                 
             except:
                 self.precios.append('Sin precio')
-                progresswindow.update_idletasks()
                 progress.set(self.contador)
                 self.contador+=1
         count = 0
@@ -107,13 +105,13 @@ class Valuador_Andina:
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.url = 'http://andinapedidos.com.ar/mayor'
         self.precios = []
         self.contador = 0
 
     # Método para obtener los precios de los articulos de andina
-    def get_prices(self, andina, progress, progresswindow, contador):
+    def get_prices(self, andina, progress, contador):
         self.sku_list = []
         for key in andina.keys():
             self.sku_list.append(andina[key][3])
@@ -126,7 +124,6 @@ class Valuador_Andina:
                 try:
                     precio = self.driver.find_element(by='xpath', value='//*[@id="cat_xxx"]/ul/li/div/div[2]/div/div/div[1]/h5')
                     self.precios.append(precio.text)
-                    progresswindow.update_idletasks()
                     progress.set(contador)
                 except:
                     self.precios.append('Sin precio')

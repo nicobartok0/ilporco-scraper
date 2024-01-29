@@ -2,13 +2,12 @@ from operador import Operador
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-import os
-
+from threading import Thread
 
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("500x200")
-root.title('Il Porco Scraper 2.0')
+root.title('Il Porco Scraper 2.2')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -21,7 +20,7 @@ nombre_label = tk.StringVar()
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
     progresswindow = Toplevel(root)
-    progresswindow.update_idletasks()
+    
     progresswindow.title('Progreso')
     progresswindow.geometry('420x100')
     ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
@@ -32,13 +31,11 @@ def boton():
     barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
     barra.grid(column=0, row=1, padx=10, pady=10)
 
-    # Ejecutamos la obtención de precios desde el operador
-    
-    operador.actualizar_precios(progress, progresswindow)
-    progresswindow.destroy()
-    nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-    os.system(f'start excel.exe "{os.getcwd()}/{nuevonombre}"')
+    # Ejecutamos la obtención de precios desde el operador en un hilo aparte
 
+    hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre== f'{str(nombre_label.get())}-ACTUALIZADO.xlsx', progresswindow), daemon=True)
+    hilo_operador.start()
+    
 
 # -- Creación de widgets
     
