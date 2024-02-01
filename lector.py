@@ -11,6 +11,7 @@ class Lector:
         self.ws = self.wb['Hoja1']
         self.intermedia = load_workbook('tabla-intermedia.xlsx')
         self.andina_codesheet = self.intermedia['Andina']
+        self.od_codesheet = self.intermedia['Oscar-David']
         self.sku_list = []
         self.name_list = []
         self.prov_list = []
@@ -69,16 +70,19 @@ class Lector:
     def separar_por_proveedor(self):
         self.maxiconsumo = {}
         self.andina = {}
+        self.oscar_david = {}
         self.nodata = {}
         for key in self.datos.keys():
             if 'MAXICONSUMO' in self.datos[key][2]:
                 self.maxiconsumo[key] = self.datos[key]
             elif 'ANDINA' in self.datos[key][2]:
                 self.andina[key] = self.datos[key]
+            elif 'OSCAR DAVID' in self.datos[key][2]:
+                self.oscar_david[key] = self.datos[key]
             else:
                 self.nodata[key] = self.datos[key]
 
-        return self.maxiconsumo, self.andina, self.nodata
+        return self.maxiconsumo, self.andina, self.oscar_david, self.nodata
 
     # Método que le asigna a cada artículo de Andina un código interno de la tabla intermedia
     def intercode_andina(self, andina):
@@ -106,9 +110,34 @@ class Lector:
             except:
                 andina[key].append('')
         return andina
+    
+    def intercode_od(self, oscar_david):
+        codes = []
+        od_codes = []
+        counter = 0
+        for code in self.od_codesheet['B']:
+            if code.value != None and code.value != 'Ilporco':
+                codes.append(str(int(code.value)))
+        for od_code in self.od_codesheet['D']:
+            if od_code.value != None and od_code.value != 'Oscar-David':
+                od_codes.append(str(int(od_code.value)))
+
+        for code in codes:
+            try:
+                oscar_david[code].append(od_codes[counter])
+            except:
+                pass
+            counter +=1
+
+        for key in oscar_david.keys():
+            try:
+                type(oscar_david[key][3])
+            except:
+                oscar_david[key].append('')
+        return oscar_david
 
     # Método que actualiza los precios en un excel actualizado
-    def actualizar_precios(self, maxiconsumo, andina):
+    def actualizar_precios(self, maxiconsumo, andina, oscar_david):
         nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
         wb_act = Workbook()
         ws_act = wb_act[wb_act.sheetnames[0]]
@@ -134,6 +163,14 @@ class Lector:
             ws_act.cell(i+1, 4, andina[key][2])
             ws_act.cell(i+1, 5, andina[key][3])
             ws_act.cell(i+1, 6, andina[key][4])
+            i+=1
+        for key in oscar_david.keys():
+            ws_act.cell(i+1, 1, key)
+            ws_act.cell(i+1, 2, oscar_david[key][0])
+            ws_act.cell(i+1, 3, oscar_david[key][1])
+            ws_act.cell(i+1, 4, oscar_david[key][2])
+            ws_act.cell(i+1, 5, oscar_david[key][3])
+            ws_act.cell(i+1, 6, oscar_david[key][4])
             i+=1
         wb_act.save(nombre_archivo)
 

@@ -55,13 +55,15 @@ class Valuador_Maxiconsumo:
         }
 
     # Método para obtener los precios de los artículos de maxiconsumo
-    def get_prices(self, maxiconsumo, progress):
+    def get_prices(self, maxiconsumo, progress, currentarticle):
         self.sku_list = []
+        article_names = {}
         for key in maxiconsumo.keys():
             self.sku_list.append(maxiconsumo[key][1])
-        total_skus = len(self.sku_list)
+            article_names[maxiconsumo[key][1]] = maxiconsumo[key][0]
         count=0
         for sku in self.sku_list:
+            currentarticle.set(article_names[sku])
             count+=1
             params = {
            'q': sku,
@@ -81,11 +83,13 @@ class Valuador_Maxiconsumo:
                 self.precios.append(precio)
                 progress.set(self.contador)
                 self.contador+=1
+                print(self.contador)
                 
             except:
                 self.precios.append('Sin precio')
                 progress.set(self.contador)
                 self.contador+=1
+                print(self.contador)
         count = 0
         for key in maxiconsumo.keys():
             maxiconsumo[key].append('')
@@ -111,20 +115,25 @@ class Valuador_Andina:
         self.contador = 0
 
     # Método para obtener los precios de los articulos de andina
-    def get_prices(self, andina, progress, contador):
+    def get_prices(self, andina, progress, contador, currentarticle):
+        
         self.sku_list = []
+        article_names = {}
+        self.contador = contador
         for key in andina.keys():
             self.sku_list.append(andina[key][3])
+            article_names[andina[key][3]] = andina[key][0]
         self.driver.get(self.url)
         for key in self.sku_list:
-            contador+=1
+            self.contador+=1
+            currentarticle.set(article_names[key])
             if key != '':    
                 self.driver.find_element(by='xpath', value='//*[@id="buscador"]').send_keys(key)
                 time.sleep(3)
                 try:
                     precio = self.driver.find_element(by='xpath', value='//*[@id="cat_xxx"]/ul/li/div/div[2]/div/div/div[1]/h5')
                     self.precios.append(precio.text)
-                    progress.set(contador)
+                    progress.set(self.contador)
                 except:
                     self.precios.append('Sin precio')
                 self.driver.find_element(by='xpath', value='//*[@id="buscador"]').clear()
@@ -135,6 +144,91 @@ class Valuador_Andina:
             andina[key].append(self.precios[count])
             count+=1
         return andina
+
+
+class Valuador_Oscar_David:
+    def __init__(self, sess_id):
+        
+        self.cookies = {
+            'PHPSESSID': sess_id,
+            '_ga': 'GA1.1.906641195.1705342638',
+            '_ga_TWE3V9LPCQ': 'GS1.1.1706819158.8.0.1706819160.0.0.0',
+            'twk_uuid_5ebd7913967ae56c5219d614': '%7B%22uuid%22%3A%221.PUnz6BA00ImXLQ5DtUMJgY8hJ0NHmLq2MqMZ9rE3FBkZPO1FftX3xwviUtQPp4yuwPIL86d5fjeKyeXVcLP3ePaE43DL9VcAMVLdQyjR5OiPwnPp8%22%2C%22version%22%3A3%2C%22domain%22%3A%22sig2k.net%22%2C%22ts%22%3A1706819690142%7D',
+            'TawkConnectionTime': '0',
+        }
+
+        self.headers = {
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Language': 'es-ES,es;q=0.9',
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            # 'Cookie': 'PHPSESSID=6f0e1e65e73852a99653643fc9682afe; _ga=GA1.1.906641195.1705342638; _ga_TWE3V9LPCQ=GS1.1.1706819158.8.0.1706819160.0.0.0; twk_uuid_5ebd7913967ae56c5219d614=%7B%22uuid%22%3A%221.PUnz6BA00ImXLQ5DtUMJgY8hJ0NHmLq2MqMZ9rE3FBkZPO1FftX3xwviUtQPp4yuwPIL86d5fjeKyeXVcLP3ePaE43DL9VcAMVLdQyjR5OiPwnPp8%22%2C%22version%22%3A3%2C%22domain%22%3A%22sig2k.net%22%2C%22ts%22%3A1706819690142%7D; TawkConnectionTime=0',
+            'Origin': 'https://oscardavid.sig2k.net',
+            'Referer': 'https://oscardavid.sig2k.net/webs/oscardavid@sigma.ODKard/sigkart/3.1/kart.php?txtbuscar=1840&catego=&cateid=&vista=cuadricula',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0',
+            'X-Requested-With': 'XMLHttpRequest',
+            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Opera GX";v="106"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+        }
+
+        self.params = {
+            'sql': 'articulos',
+        }
+
+        self.data = {
+            'txtbuscar': '',
+            'catego': '',
+            'chkcatego': 'false',
+            'orden': '',
+            'ver': '',
+            'nocache': '',
+            'rows': '24',
+            'skip': '0',
+        }
+        self.url = 'https://oscardavid.sig2k.net/webs/oscardavid@sigma.ODKard/sigkart/3.1/'
+        self.precios = []
+        self.contador = 0
+
+    # Método para obtener los precios de los articulos de andina
+    def get_prices(self, oscar_david, progress, contador, currentarticle):
+        self.sku_list = []
+        self.contador = contador
+        for key in oscar_david.keys():
+            self.sku_list.append(oscar_david[key][3])
+        for key in self.sku_list:
+            self.contador+=1
+            if key != '':    
+                self.data['txtbuscar'] = key
+                response = requests.post(
+                    'https://oscardavid.sig2k.net/webs/oscardavid@sigma.ODKard/sigkart/3.1/swexecute.php',
+                    params=self.params,
+                    cookies=self.cookies,
+                    headers=self.headers,
+                    data=self.data,
+                )
+                codename = 'Cod. ' + key
+
+                res = response.json()
+                for i in res:
+                    if i['SUBTIT'] == codename:
+                        self.precios.append(i['PRBASE'])
+                progress.set(self.contador)
+
+            else:
+                self.precios.append('Sin precio')
+                progress.set(self.contador)
+        count = 0
+        for key in oscar_david.keys():
+            oscar_david[key].append(self.precios[count])
+            count+=1
+        return oscar_david
+
+    
+
 
     
 
