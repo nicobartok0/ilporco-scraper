@@ -6,8 +6,8 @@ from threading import Thread
 
 # Se genera el elemento base de tkinter
 root = Tk()
-root.geometry("500x200")
-root.title('Il Porco Scraper 3.0')
+root.geometry("600x220")
+root.title('Il Porco Scraper 3.1')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -47,6 +47,10 @@ ttk.Label(frame, text="Il Porco Scraper").grid(column=0, row=0)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Maxiconsumo: ').grid(column=0, row=1)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Oscar David: ').grid(column=0, row=2)
 ttk.Label(frame, text='Ingrese el nombre del libro de Excel: ').grid(column=0, row=3)
+disclaimer = ttk.Label(frame, text='* Versión funcional con distribuidores: Maxiconsumo, Andina y Oscar David')
+disclaimer.grid(column=0, row=5, pady=20)
+disclaimer.config(font=("Courier", 6))
+disclaimer.config(foreground='gray')
 
 # Creamos las entries y les asignamos las variables que ya creamos
 ttk.Entry(frame, textvariable=maxi_id_label).grid(column=1, row=1, pady=10)

@@ -83,13 +83,12 @@ class Valuador_Maxiconsumo:
                 self.precios.append(precio)
                 progress.set(self.contador)
                 self.contador+=1
-                print(self.contador)
-                
+               
             except:
                 self.precios.append('Sin precio')
                 progress.set(self.contador)
                 self.contador+=1
-                print(self.contador)
+
         count = 0
         for key in maxiconsumo.keys():
             maxiconsumo[key].append('')
@@ -196,11 +195,15 @@ class Valuador_Oscar_David:
     # Método para obtener los precios de los articulos de andina
     def get_prices(self, oscar_david, progress, contador, currentarticle):
         self.sku_list = []
+        article_names = {}
         self.contador = contador
         for key in oscar_david.keys():
             self.sku_list.append(oscar_david[key][3])
+            article_names[oscar_david[key][3]] = oscar_david[key][0]
+        
         for key in self.sku_list:
             self.contador+=1
+            currentarticle.set(article_names[key])
             if key != '':    
                 self.data['txtbuscar'] = key
                 response = requests.post(
@@ -213,18 +216,28 @@ class Valuador_Oscar_David:
                 codename = 'Cod. ' + key
 
                 res = response.json()
+                subtits = []
                 for i in res:
-                    if i['SUBTIT'] == codename:
-                        self.precios.append(i['PRBASE'])
+                    subtits.append(i['SUBTIT'])
+
+                if codename in subtits:    
+                    for i in res:
+                        if i['SUBTIT'] == codename:
+                            self.precios.append(i['PRBASE'])
+                else:
+                    self.precios.append('Sin Precio')
                 progress.set(self.contador)
 
             else:
                 self.precios.append('Sin precio')
                 progress.set(self.contador)
+
         count = 0
+
         for key in oscar_david.keys():
             oscar_david[key].append(self.precios[count])
-            count+=1
+            if count < len(oscar_david.keys())-1:
+                count+=1
         return oscar_david
 
     
