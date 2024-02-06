@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import os
 
 # Creamos nuestro Valuador que recibe como parámetro la lista de todos los SKUs y 
 # el ID De la sesión de Maxiconsumo
@@ -103,19 +104,84 @@ class Valuador_Maxiconsumo:
         print(self.headers)
 
 class Valuador_Andina:
-    def __init__(self):
+    def __init__(self, sess_id):
+        self.url = 'http://andinapedidos.com.ar/mayor'
+        self.sess_id = sess_id
+        self.precios = []
+        self.contador = 0
+
+        
+
+    def get_prices(self, andina, progress, contador, currentarticle):
+        
+        
+        self.cookies = {
+            'PHPSESSID': self.sess_id,
+        }
+
+        self.headers = { 
+            'authority': 'andinapedidos.com.ar',
+            'accept': 'text/html, */*; q=0.01',
+            'accept-language': 'es-ES,es;q=0.9',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            # 'cookie': 'PHPSESSID=0d4b164dfd2da94b05e5291de9deb977',
+            'origin': 'https://andinapedidos.com.ar',
+            'referer': 'https://andinapedidos.com.ar/mayor',
+            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Opera GX";v="106"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0',
+            'x-requested-with': 'XMLHttpRequest',
+        }
+
+        self.data = {
+            'producto': '',
+        }
+
+        self.sku_list = []
+        article_names = {}
+        print(andina)
+        for key in andina.keys():
+            self.sku_list.append(andina[key][3])
+            article_names[andina[key][3]] = andina[key][0]
+        count=0
+        for sku in self.sku_list:
+            currentarticle.set(article_names[sku])
+            count+=1
+            self.data['producto'] = sku
+            response = requests.post('https://andinapedidos.com.ar/includes/buscador.php', cookies=self.cookies, headers=self.headers, data=self.data)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            precio = soup.find('h5')
+            if type(precio) != None:
+                self.precios.append(precio.text)
+                progress.set(self.contador)
+                self.contador+=1
+            
+            else:
+                self.precios.append('Sin precio')
+                progress.set(self.contador)
+                self.contador+=1
+
+        count = 0
+        for key in andina.keys():
+            andina[key].append(self.precios[count])
+            count+=1
+        return andina
+
+    # Método para obtener los precios de los articulos de andina
+    def get_prices_webdriver(self, andina, progress, contador, currentarticle):
+        
         chrome_options = Options()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-dev-shm-usage')
-        self.driver = webdriver.Chrome(options=chrome_options)
-        self.url = 'http://andinapedidos.com.ar/mayor'
-        self.precios = []
-        self.contador = 0
+        chrome_options.binary_location = "C:\Program Files\Google\Chrome\Application" 
+        service = Service(executable_path=f'{os.getcwd()}/assets/chromedriver.exe')
+        self.driver = webdriver.Chrome(options=chrome_options, service=service)
 
-    # Método para obtener los precios de los articulos de andina
-    def get_prices(self, andina, progress, contador, currentarticle):
-        
         self.sku_list = []
         article_names = {}
         self.contador = contador
@@ -192,7 +258,7 @@ class Valuador_Oscar_David:
         self.precios = []
         self.contador = 0
 
-    # Método para obtener los precios de los articulos de andina
+    # Método para obtener los precios de los articulos de Oscar David
     def get_prices(self, oscar_david, progress, contador, currentarticle):
         self.sku_list = []
         article_names = {}
@@ -219,7 +285,6 @@ class Valuador_Oscar_David:
                 subtits = []
                 for i in res:
                     subtits.append(i['SUBTIT'])
-
                 if codename in subtits:    
                     for i in res:
                         if i['SUBTIT'] == codename:

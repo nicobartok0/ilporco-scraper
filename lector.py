@@ -7,9 +7,9 @@ class Lector:
     # Constructor de "Lector". Necesita el nombre del archivo excel del que sacar los datos.
     def __init__(self, name):
         self.name = name
-        self.wb = load_workbook(name + '.xlsx')
+        self.wb = load_workbook('archivos/' + name + '.xlsx')
         self.ws = self.wb['Hoja1']
-        self.intermedia = load_workbook('tabla-intermedia.xlsx')
+        self.intermedia = load_workbook('assets/tabla-intermedia.xlsx')
         self.andina_codesheet = self.intermedia['Andina']
         self.od_codesheet = self.intermedia['Oscar-David']
         self.sku_list = []
@@ -115,20 +115,39 @@ class Lector:
         codes = []
         od_codes = []
         counter = 0
+        # Hacemos una lista con los códigos de IlPorco de la tabla intermedia
         for code in self.od_codesheet['B']:
             if code.value != None and code.value != 'Ilporco':
                 codes.append(str(int(code.value)))
+
+        # Hacemos una lista con los códigos de Oscar David de la tabla inttermedia
         for od_code in self.od_codesheet['D']:
             if od_code.value != None and od_code.value != 'Oscar-David':
                 od_codes.append(str(int(od_code.value)))
+        # Limpiamos los puntos flotantes en los keys del diccionario si es que los hay
+        keys = []
+        for key in oscar_david.keys():
+            keys.append(key)
 
+        for key in keys:
+            if ".0" in key:
+                newkey = key
+                newkey = newkey[:-2]
+                oscar_david[newkey] = oscar_david[key]
+                del oscar_david[key]
+
+        # Por cada código de la tabla intermedia
         for code in codes:
+            # Intenta añadir al diccionario de oscar_david, en el índice del código de IlPorco si es que existe, 
+            # un valor nuevo a la lista de elementos: el código de Oscar David.
             try:
                 oscar_david[code].append(od_codes[counter])
             except:
+                # Si no encuentra un código correspondiente, simplemente el programa sigue.
                 pass
             counter +=1
 
+        # Verificamos la existetncia del elemento que corresponde al código, y si no hay código añadido, añadimos un caracter vacío.
         for key in oscar_david.keys():
             try:
                 type(oscar_david[key][3])
@@ -172,7 +191,7 @@ class Lector:
             ws_act.cell(i+1, 5, oscar_david[key][3])
             ws_act.cell(i+1, 6, oscar_david[key][4])
             i+=1
-        wb_act.save(nombre_archivo)
+        wb_act.save('archivos/'+nombre_archivo)
 
 
 
