@@ -113,7 +113,7 @@ class Valuador_Andina:
         
 
     def get_prices(self, andina, progress, contador, currentarticle):
-        
+        self.contador = contador
         
         self.cookies = {
             'PHPSESSID': self.sess_id,
@@ -155,7 +155,7 @@ class Valuador_Andina:
             response = requests.post('https://andinapedidos.com.ar/includes/buscador.php', cookies=self.cookies, headers=self.headers, data=self.data)
             soup = BeautifulSoup(response.content, 'html.parser')
             precio = soup.find('h5')
-            if type(precio) != None:
+            if precio != None:
                 self.precios.append(precio.text)
                 progress.set(self.contador)
                 self.contador+=1
