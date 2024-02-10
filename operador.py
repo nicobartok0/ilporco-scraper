@@ -24,7 +24,8 @@ class Operador:
         self.andina = self.valuador_andina.get_prices(self.andina, progress, self.valuador_maxiconsumo.contador, currentarticle)
         self.oscar_david = self.valuador_oscar_david.get_prices(self.oscar_david, progress, self.valuador_andina.contador, currentarticle)
         self.scanner.actualizar_precios(self.maxiconsumo, self.andina, self.oscar_david)
-        os.system(f'start excel.exe "{os.getcwd()}/archivos/{nuevonombre}"')
+        print(nuevonombre)
+        os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{nuevonombre}"')
         progresswindow.destroy()
 
 

@@ -64,6 +64,7 @@ class Valuador_Maxiconsumo:
             article_names[maxiconsumo[key][1]] = maxiconsumo[key][0]
         count=0
         for sku in self.sku_list:
+            self.contador+=1
             currentarticle.set(article_names[sku])
             count+=1
             params = {
@@ -83,12 +84,11 @@ class Valuador_Maxiconsumo:
                 precio = precios[1].text
                 self.precios.append(precio)
                 progress.set(self.contador)
-                self.contador+=1
+            
                
             except:
                 self.precios.append('Sin precio')
                 progress.set(self.contador)
-                self.contador+=1
 
         count = 0
         for key in maxiconsumo.keys():
@@ -143,27 +143,32 @@ class Valuador_Andina:
 
         self.sku_list = []
         article_names = {}
-        print(andina)
         for key in andina.keys():
             self.sku_list.append(andina[key][3])
             article_names[andina[key][3]] = andina[key][0]
         count=0
         for sku in self.sku_list:
-            currentarticle.set(article_names[sku])
-            count+=1
-            self.data['producto'] = sku
-            response = requests.post('https://andinapedidos.com.ar/includes/buscador.php', cookies=self.cookies, headers=self.headers, data=self.data)
-            soup = BeautifulSoup(response.content, 'html.parser')
-            precio = soup.find('h5')
-            if precio != None:
-                self.precios.append(precio.text)
-                progress.set(self.contador)
-                self.contador+=1
-            
+            self.contador +=1
+            if sku != '':    
+                currentarticle.set(article_names[sku])
+                count+=1
+                self.data['producto'] = sku
+                response = requests.post('https://andinapedidos.com.ar/includes/buscador.php', cookies=self.cookies, headers=self.headers, data=self.data)
+                soup = BeautifulSoup(response.content, 'html.parser')
+                precio = soup.find('h5')
+                if precio != None:
+                    self.precios.append(precio.text)
+                    progress.set(self.contador)
+                    
+                
+                else:
+                    self.precios.append('Sin precio')
+                    progress.set(self.contador)
+                    
             else:
                 self.precios.append('Sin precio')
                 progress.set(self.contador)
-                self.contador+=1
+                
 
         count = 0
         for key in andina.keys():

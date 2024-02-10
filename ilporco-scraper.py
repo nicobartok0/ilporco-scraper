@@ -8,7 +8,7 @@ from sesionador import Sesionador
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("600x300")
-root.title('Il Porco Scraper 3.4')
+root.title('Il Porco Scraper 3.5')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -43,8 +43,8 @@ def boton():
     ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
 
     # Ejecutamos la obtención de precios desde el operador en un hilo aparte
-
-    hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre== f'{str(nombre_label.get())}-ACTUALIZADO.xlsx', progresswindow, currentarticle), daemon=True)
+    nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+    hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
     hilo_operador.start()
     
 
