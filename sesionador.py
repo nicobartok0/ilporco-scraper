@@ -43,6 +43,25 @@ class Sesionador:
 
         # Devolvemos el id de sesión.
         return andina_sess_id
+
+    def sesionar_serenisima(self, user, pswd):
+        # El driver busca la página y espera 3 segundos
+        self.driver.get('https://www.tiendalaserenisima.com.ar/web/login')
+        time.sleep(3)
+        # Luego envía a los campos de "email" el correo electrónico enviado al método y en "pswd" la contraseña.
+        self.driver.find_element(by='xpath', value='//*[@id="login"]').send_keys(user)
+        self.driver.find_element(by='xpath', value='//*[@id="password-login"]').send_keys(pswd)
+        # El driver hace click en el botón de envío de credenciales.
+        self.driver.find_element(by='xpath', value='//*[@id="dan_login_form_submit_id"]').click()
+        time.sleep(3)
+        # Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "session_id", que es la cookie
+        # de ID de Sesión, y guardamos su valor.
+        cookies = self.driver.get_cookies()
+        for cookie in cookies:
+            if cookie['name'] == 'session_id':
+                serenisima_sess_id = cookie['value']
+
+        return serenisima_sess_id
     
 
 

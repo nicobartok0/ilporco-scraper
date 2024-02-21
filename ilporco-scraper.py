@@ -8,7 +8,7 @@ from sesionador import Sesionador
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("600x300")
-root.title('Il Porco Scraper 3.5')
+root.title('Il Porco Scraper 4.0')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -17,10 +17,13 @@ frame.grid()
 maxi_id_label = tk.StringVar()
 andina_id_label = tk.StringVar()
 od_id_label = tk.StringVar()
+serenisima_id_label = tk.StringVar()
 nombre_label = tk.StringVar()
 currentarticle = tk.StringVar()
 maxi_user = StringVar()
 maxi_pswd = StringVar()
+sere_user = StringVar()
+sere_pswd = StringVar()
 
 # Creamos la imagen de Il Porco que será usada como ícono de la aplicación.
 
@@ -52,16 +55,21 @@ def boton():
 def ventana_sesiones():
     sessionwindow = Toplevel(root)
     sessionwindow.title('Sesionador')
-    sessionwindow.geometry('580x290')
+    sessionwindow.geometry('580x360')
     ttk.Label(sessionwindow, text='Sesionador de Il Porco Scraper').grid(column=1, row=0)
     ttk.Label(sessionwindow, text='Credenciales de Maxiconsumo').grid(column=1, row=1, pady=10)
     ttk.Label(sessionwindow, text='Correo Electrónico: ').grid(column=0, row=2, pady=10)
     ttk.Label(sessionwindow, text='Contraseña: ').grid(column=0, row=3, pady=10)
+    ttk.Label(sessionwindow, text='Credenciales de La Serenísima').grid(column=1, row=4, pady=10)
+    ttk.Label(sessionwindow, text='Correo Electrónico: ').grid(column=0, row=5, pady=10)
+    ttk.Label(sessionwindow, text='Contraseña: ').grid(column=0, row=6, pady=10)
     ttk.Entry(sessionwindow, textvariable=maxi_user).grid(column=1, row=2, pady=10)
     ttk.Entry(sessionwindow, textvariable=maxi_pswd, show='*').grid(column=1, row=3, pady=10)
-    ttk.Button(sessionwindow, text='Abrir sesiones', command=lambda: sesionar(sessionwindow)).grid(column=1, row=4, pady=10)
+    ttk.Entry(sessionwindow, textvariable=sere_user).grid(column=1, row=5, pady=10)
+    ttk.Entry(sessionwindow, textvariable=sere_pswd, show='*').grid(column=1, row=6, pady=10)
+    ttk.Button(sessionwindow, text='Abrir sesiones', command=lambda: sesionar(sessionwindow)).grid(column=1, row=8, pady=10)
     disclaimer2 = ttk.Label(sessionwindow, text='* La sesión de Oscar David debe ser abierta de forma manual')
-    disclaimer2.grid(column=0, row=5, pady=20)
+    disclaimer2.grid(column=0, row=7, pady=20)
     disclaimer2.config(font=("Courier", 6))
     disclaimer2.config(foreground='black')
 
@@ -70,8 +78,10 @@ def sesionar(sessionwindow):
     sesionador = Sesionador()
     maxi_sess_id = sesionador.sesionar_maxiconsumo(user=maxi_user.get(), pswd=maxi_pswd.get())
     andina_sess_id = sesionador.sesionar_andina()
+    serenisima_sess_id = sesionador.sesionar_serenisima(user=sere_user.get(), pswd=sere_pswd.get())
     maxi_id_label.set(maxi_sess_id)
     andina_id_label.set(andina_sess_id)
+    serenisima_id_label.set(serenisima_sess_id)
     sessionwindow.destroy()
 
 # -- Creación de widgets
@@ -81,9 +91,10 @@ ttk.Label(frame, text="Il Porco Scraper").grid(column=0, row=0)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Maxiconsumo: ').grid(column=0, row=1)
 ttk.Label(frame, text='Ingrese el ID de Andina: ').grid(column=0, row=2)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Oscar David: ').grid(column=0, row=3)
-ttk.Label(frame, text='Ingrese el nombre del libro de Excel: ').grid(column=0, row=4)
+ttk.Label(frame, text='Ingrese el ID de Sesión de La Serenísima: ').grid(column=0, row=4)
+ttk.Label(frame, text='Ingrese el nombre del libro de Excel: ').grid(column=0, row=5)
 disclaimer = ttk.Label(frame, text='* Versión funcional con distribuidores: Maxiconsumo, Andina y Oscar David')
-disclaimer.grid(column=0, row=6, pady=20)
+disclaimer.grid(column=0, row=7, pady=20)
 disclaimer.config(font=("Courier", 6))
 disclaimer.config(foreground='black')
 
@@ -91,12 +102,13 @@ disclaimer.config(foreground='black')
 ttk.Entry(frame, textvariable=maxi_id_label).grid(column=1, row=1, pady=10)
 ttk.Entry(frame, textvariable=andina_id_label).grid(column=1, row=2, pady=10)
 ttk.Entry(frame, textvariable=od_id_label).grid(column=1, row=3, pady=10)
-ttk.Entry(frame, textvariable=nombre_label).grid(column=1, row=4, pady=10)
+ttk.Entry(frame, textvariable=serenisima_id_label).grid(column=1, row=4, pady=10)
+ttk.Entry(frame, textvariable=nombre_label).grid(column=1, row=5, pady=10)
 
 # Creamos los botones con sus respectivos comandos (salir del programa y iniciar búsqueda)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
-ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=5)
-ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=5)
+ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=6)
+ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=6)
 
 # Activamos el loop principal 
 if __name__ == '__main__':

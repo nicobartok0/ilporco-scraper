@@ -311,8 +311,46 @@ class Valuador_Oscar_David:
         return oscar_david
 
     
+class Valuador_La_Serenisima():
+    def __init__(self, sess_id):
+        
+        self.cookies = {
+            'frontend_lang': 'es_AR',
+            'tz': 'America/Buenos_Aires',
+            '_gid': 'GA1.3.1842482496.1707941738',
+            'session_id': sess_id,
+            'visitor_uuid': 'd327af60d09a48a9bb9c17fbf81a7e3b',
+            '_gat': '1',
+            '_ga': 'GA1.1.381898345.1707591214',
+            '_ga_GWV00PQ3Y1': 'GS1.1.1707941763.2.1.1707941883.8.0.0',
+            '_ga_VVC4ZKVCM2': 'GS1.3.1707941738.2.1.1707941884.0.0.0',
+            '_ga_YTRXKYLBLP': 'GS1.1.1707941763.2.1.1707941935.60.0.0',
+        }
 
+        self.headers = {
+            'authority': 'www.tiendalaserenisima.com.ar',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'accept-language': 'es-ES,es;q=0.9',
+            # 'cookie': 'frontend_lang=es_AR; tz=America/Buenos_Aires; _gid=GA1.3.1842482496.1707941738; session_id=384f50ec8e340c71ca5a778a2a75b51a88b6dfd5; visitor_uuid=d327af60d09a48a9bb9c17fbf81a7e3b; _gat=1; _ga=GA1.1.381898345.1707591214; _ga_GWV00PQ3Y1=GS1.1.1707941763.2.1.1707941883.8.0.0; _ga_VVC4ZKVCM2=GS1.3.1707941738.2.1.1707941884.0.0.0; _ga_YTRXKYLBLP=GS1.1.1707941763.2.1.1707941935.60.0.0',
+            'referer': 'https://www.tiendalaserenisima.com.ar/shop?category=&search=363000&order=',
+            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Opera GX";v="106"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0',
+        }
 
+        self.params = {
+            'category': '',
+            'search': '',
+            'order': '',
+        }
+        self.precios = []
+        self.contador = 0
     
 
 
