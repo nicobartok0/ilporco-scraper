@@ -30,6 +30,40 @@ class Operador:
         os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{nuevonombre}"')
         progresswindow.destroy()
 
+    def actualizar_precios_doble(self, progress, nuevonombre, progresswindow, currentarticle):
+        
+        
+        self.contador = 0
+        self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima, self.nodata = self.scanner.separar_por_proveedor()
+        self.andina = self.scanner.intercode_andina(self.andina)
+        self.oscar_david = self.scanner.intercode_od(self.oscar_david)
+        self.la_serenisima = self.scanner.intercode_serenisima(self.la_serenisima)
+        self.maxiconsumo = self.valuador_maxiconsumo.get_prices(self.maxiconsumo, progress, currentarticle)
+        
+        # Creamos una lista de los artículos de Maxiconsumo sin precio para después buscarlos en Oscar David
+
+        articulos_extra = {}
+        for key in self.maxiconsumo.keys():
+            if self.maxiconsumo[key][4] == 'Sin precio':
+                articulos_extra[key] = self.maxiconsumo[key] 
+
+        self.andina = self.valuador_andina.get_prices(self.andina, progress, self.valuador_maxiconsumo.contador, currentarticle)
+        self.oscar_david = self.valuador_oscar_david.get_prices(self.oscar_david, progress, self.valuador_andina.contador, currentarticle)
+        self.la_serenisima = self.valuador_serenisima.get_prices(self.la_serenisima, progress, self.valuador_oscar_david.contador, currentarticle)
+
+        # Buscamos los artículos extra en Oscar David
+        articulos_extra = self.scanner.intercode_od(articulos_extra)
+        currentarticle.set('BUSCANDO PRECIOS NULOS EN OSCAR DAVID...')
+        articulos_extra = self.valuador_oscar_david.get_prices_simple(articulos_extra)
+        print(articulos_extra)
+        # Añadimos los artículos extra al diccionario de Maxiconsumo
+        for key in articulos_extra.keys():
+            self.maxiconsumo[key] = articulos_extra[key]
+        
+        self.scanner.actualizar_precios(self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima)
+        os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{nuevonombre}"')
+        progresswindow.destroy()
+
 
     def cantidad_datos(self):
         self.datos_totales = self.scanner.obtener_datos()

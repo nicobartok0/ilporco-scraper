@@ -310,8 +310,54 @@ class Valuador_Oscar_David:
                 count+=1
         return oscar_david
 
+    # Método simplificado para obtener los precios de los articulos de Oscar David
+    def get_prices_simple(self, articulos_extra):
+        self.sku_list = []
+        article_names = {}
+        for key in articulos_extra.keys():
+            self.sku_list.append(articulos_extra[key][3])
+            article_names[articulos_extra[key][3]] = articulos_extra[key][0]
+        
+        for key in self.sku_list:
+
+            if key != '':    
+                self.data['txtbuscar'] = key
+                response = requests.post(
+                    'https://oscardavid.sig2k.net/webs/oscardavid@sigma.ODKard/sigkart/3.1/swexecute.php',
+                    params=self.params,
+                    cookies=self.cookies,
+                    headers=self.headers,
+                    data=self.data,
+                )
+                codename = 'Cod. ' + key
+
+                res = response.json()
+                subtits = []
+                for i in res:
+                    subtits.append(i['SUBTIT'])
+                if codename in subtits:    
+                    for i in res:
+                        if i['SUBTIT'] == codename:
+                            precio = i['PRBASE']
+                            text = f'{precio} - (Oscar David)'
+                            self.precios.append(text)
+                else:
+                    self.precios.append('Sin Precio (Ni en Maxiconsumo ni en Oscar David)')
+
+
+            else:
+                self.precios.append('Sin precio (Ni en Maxiconsumo ni en Oscar David)')
+
+        count = 0
+
+        for key in articulos_extra.keys():
+            articulos_extra[key][4] = self.precios[count]
+            if count < len(articulos_extra.keys())-1:
+                count+=1
+        return articulos_extra
     
 class Valuador_La_Serenisima():
+
     def __init__(self, sess_id):
         
         self.sess_id = sess_id

@@ -7,8 +7,8 @@ from sesionador import Sesionador
 
 # Se genera el elemento base de tkinter
 root = Tk()
-root.geometry("600x300")
-root.title('Il Porco Scraper 4.0')
+root.geometry("680x320")
+root.title('Il Porco Scraper 4.1')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -24,6 +24,7 @@ maxi_user = StringVar()
 maxi_pswd = StringVar()
 sere_user = StringVar()
 sere_pswd = StringVar()
+busqueda = BooleanVar()
 
 # Creamos la imagen de Il Porco que será usada como ícono de la aplicación.
 
@@ -47,8 +48,12 @@ def boton():
 
     # Ejecutamos la obtención de precios desde el operador en un hilo aparte
     nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-    hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
-    hilo_operador.start()
+    if busqueda.get() == False:
+        hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+        hilo_operador.start()
+    else:
+        hilo_operador = Thread(target=operador.actualizar_precios_doble, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+        hilo_operador.start()
     
 
 # Creamos la función que el botón "Obtener sesiones" ejecutará.
@@ -93,8 +98,8 @@ ttk.Label(frame, text='Ingrese el ID de Andina: ').grid(column=0, row=2)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Oscar David: ').grid(column=0, row=3)
 ttk.Label(frame, text='Ingrese el ID de Sesión de La Serenísima: ').grid(column=0, row=4)
 ttk.Label(frame, text='Ingrese el nombre del libro de Excel: ').grid(column=0, row=5)
-disclaimer = ttk.Label(frame, text='* Versión funcional con distribuidores: Maxiconsumo, Andina y Oscar David')
-disclaimer.grid(column=0, row=7, pady=20)
+disclaimer = ttk.Label(frame, text='* Versión funcional con distribuidores: Maxiconsumo, Andina, Oscar David y La Serenísima')
+disclaimer.grid(column=0, row=8, pady=20)
 disclaimer.config(font=("Courier", 6))
 disclaimer.config(foreground='black')
 
@@ -109,6 +114,9 @@ ttk.Entry(frame, textvariable=nombre_label).grid(column=1, row=5, pady=10)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
 ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=6)
 ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=6)
+
+# Creamos la checkbox para decirle al programa si es necesario buscar los elementos "Sin Precio" de Maxiconsumo en Oscar David
+ttk.Checkbutton(frame, text='Buscar "Sin Precio" en Oscar David', variable=busqueda).grid(column=0, row=7)
 
 # Activamos el loop principal 
 if __name__ == '__main__':
