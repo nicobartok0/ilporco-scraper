@@ -40,7 +40,7 @@ def boton():
     nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
     progress = IntVar()
     # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
-    operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()),  nombre_excel=str(nombre_label.get()))
+    operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()))
     barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
     barra.grid(column=0, row=1, padx=10, pady=10)
     ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)

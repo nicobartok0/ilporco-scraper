@@ -12,6 +12,7 @@ class Lector:
         self.intermedia = load_workbook('assets/tabla-intermedia.xlsx')
         self.andina_codesheet = self.intermedia['Andina']
         self.od_codesheet = self.intermedia['Oscar-David']
+        self.ser_codesheet = self.intermedia['La-Serenisima']
         self.sku_list = []
         self.name_list = []
         self.prov_list = []
@@ -71,6 +72,7 @@ class Lector:
         self.maxiconsumo = {}
         self.andina = {}
         self.oscar_david = {}
+        self.serenisima = {}
         self.nodata = {}
         for key in self.datos.keys():
             if 'MAXICONSUMO' in self.datos[key][2]:
@@ -79,10 +81,12 @@ class Lector:
                 self.andina[key] = self.datos[key]
             elif 'OSCAR DAVID' in self.datos[key][2]:
                 self.oscar_david[key] = self.datos[key]
+            elif 'SERENISIMA' in self.datos[key][2]:
+                self.serenisima[key] = self.datos[key]
             else:
                 self.nodata[key] = self.datos[key]
 
-        return self.maxiconsumo, self.andina, self.oscar_david, self.nodata
+        return self.maxiconsumo, self.andina, self.oscar_david, self.serenisima, self.nodata
 
     # Método que le asigna a cada artículo de Andina un código interno de la tabla intermedia
     def intercode_andina(self, andina):
@@ -154,9 +158,35 @@ class Lector:
             except:
                 oscar_david[key].append('')
         return oscar_david
+    
+    def intercode_serenisima(self, serenisima):
+        codes = []
+        ser_codes = []
+        counter = 0
+        for code in self.ser_codesheet['B']:
+            if code.value != None and code.value != 'Ilporco':
+                codes.append(str(int(code.value)))
+        for ser_code in self.ser_codesheet['D']:
+            if ser_code.value != None and ser_code.value != 'La-Serenisima':
+                ser_codes.append(str(int(ser_code.value)))
+        #new_andina = {}
+        for code in codes:
+            try:
+                serenisima[code].append(ser_codes[counter])
+            except:
+                pass
+            counter +=1
+
+        for key in serenisima.keys():
+            try:
+                type(serenisima[key][3])
+            except:
+                serenisima[key].append('')
+        return serenisima
+
 
     # Método que actualiza los precios en un excel actualizado
-    def actualizar_precios(self, maxiconsumo, andina, oscar_david):
+    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima):
         nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
         wb_act = Workbook()
         ws_act = wb_act[wb_act.sheetnames[0]]
@@ -190,6 +220,14 @@ class Lector:
             ws_act.cell(i+1, 4, oscar_david[key][2])
             ws_act.cell(i+1, 5, oscar_david[key][3])
             ws_act.cell(i+1, 6, oscar_david[key][4])
+            i+=1
+        for key in serenisima.keys():
+            ws_act.cell(i+1, 1, key)
+            ws_act.cell(i+1, 2, serenisima[key][0])
+            ws_act.cell(i+1, 3, serenisima[key][1])
+            ws_act.cell(i+1, 4, serenisima[key][2])
+            ws_act.cell(i+1, 5, serenisima[key][3])
+            ws_act.cell(i+1, 6, serenisima[key][4])
             i+=1
         wb_act.save('archivos/'+nombre_archivo)
 

@@ -314,18 +314,7 @@ class Valuador_Oscar_David:
 class Valuador_La_Serenisima():
     def __init__(self, sess_id):
         
-        self.cookies = {
-            'frontend_lang': 'es_AR',
-            'tz': 'America/Buenos_Aires',
-            '_gid': 'GA1.3.1842482496.1707941738',
-            'session_id': sess_id,
-            'visitor_uuid': 'd327af60d09a48a9bb9c17fbf81a7e3b',
-            '_gat': '1',
-            '_ga': 'GA1.1.381898345.1707591214',
-            '_ga_GWV00PQ3Y1': 'GS1.1.1707941763.2.1.1707941883.8.0.0',
-            '_ga_VVC4ZKVCM2': 'GS1.3.1707941738.2.1.1707941884.0.0.0',
-            '_ga_YTRXKYLBLP': 'GS1.1.1707941763.2.1.1707941935.60.0.0',
-        }
+        self.sess_id = sess_id
 
         self.headers = {
             'authority': 'www.tiendalaserenisima.com.ar',
@@ -351,6 +340,55 @@ class Valuador_La_Serenisima():
         }
         self.precios = []
         self.contador = 0
+
+    def get_prices(self, la_serenisima, progress, contador, currentarticle):
+        
+        self.cookies = {
+            'frontend_lang': 'es_AR',
+            'tz': 'America/Buenos_Aires',
+            '_gid': 'GA1.3.1842482496.1707941738',
+            'session_id': self.sess_id,
+            'visitor_uuid': 'd327af60d09a48a9bb9c17fbf81a7e3b',
+            '_gat': '1',
+            '_ga': 'GA1.1.381898345.1707591214',
+            '_ga_GWV00PQ3Y1': 'GS1.1.1707941763.2.1.1707941883.8.0.0',
+            '_ga_VVC4ZKVCM2': 'GS1.3.1707941738.2.1.1707941884.0.0.0',
+            '_ga_YTRXKYLBLP': 'GS1.1.1707941763.2.1.1707941935.60.0.0',
+        }
+        
+        self.sku_list = []
+        article_names = {}
+        self.contador = contador
+        for key in la_serenisima.keys():
+            self.sku_list.append(la_serenisima[key][3])
+            article_names[la_serenisima[key][3]] = la_serenisima[key][0]
+
+        for sku in self.sku_list:
+            self.contador +=1
+            if sku != '':    
+                currentarticle.set(article_names[sku])
+                self.params['search'] = sku
+                response = requests.get('https://www.tiendalaserenisima.com.ar/shop', params=self.params, cookies=self.cookies, headers=self.headers)
+                soup = BeautifulSoup(response.text, 'html.parser')
+                precio = soup.find('span', {'class': 'oe_currency_value'})
+                if precio != None:
+                    self.precios.append(precio.text)
+                    progress.set(self.contador)
+                    
+                
+                else:
+                    self.precios.append('Sin precio')
+                    progress.set(self.contador)
+                    
+            else:
+                self.precios.append('Sin precio')
+                progress.set(self.contador)
+
+        count = 0
+        for key in la_serenisima.keys():
+            la_serenisima[key].append(self.precios[count])
+            count+=1
+        return la_serenisima
     
 
 
