@@ -2,13 +2,15 @@ from operador import Operador
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import tkinter.messagebox
 from threading import Thread
 from sesionador import Sesionador
+import os
 
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("680x320")
-root.title('Il Porco Scraper 4.1')
+root.title('Il Porco Scraper 4.3')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -31,29 +33,47 @@ busqueda = BooleanVar()
 logo = PhotoImage(file='assets/ilporcologo.png')
 root.iconphoto(True, logo)
 
+# Obtenemos los nombres de los archivos dentro de la carpeta "archivos"
+listnames = []
+names = os.listdir('archivos/')
+for name in names:
+    name = name[:-5]
+    listnames.append(name)
+
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
-    progresswindow = Toplevel(root)
-    
-    progresswindow.title('Progreso')
-    progresswindow.geometry('420x100')
-    ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
-    nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-    progress = IntVar()
-    # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
-    operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()))
-    barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
-    barra.grid(column=0, row=1, padx=10, pady=10)
-    ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
 
-    # Ejecutamos la obtención de precios desde el operador en un hilo aparte
-    nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-    if busqueda.get() == False:
-        hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
-        hilo_operador.start()
+    if nombre_label.get() != '':
+        try:
+            if nombre_label.get() in listnames:
+                progresswindow = Toplevel(root)
+                
+                progresswindow.title('Progreso')
+                progresswindow.geometry('420x100')
+                ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
+                nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+                progress = IntVar()
+                # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
+                operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()))
+                barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
+                barra.grid(column=0, row=1, padx=10, pady=10)
+                ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
+
+                # Ejecutamos la obtención de precios desde el operador en un hilo aparte
+                nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+                if busqueda.get() == False:
+                    hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+                    hilo_operador.start()
+                else:
+                    hilo_operador = Thread(target=operador.actualizar_precios_doble, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+                    hilo_operador.start()
+        except FileNotFoundError as fntfound:
+            print(fntfound)
+            tkinter.messagebox.showerror("Error", "No se encuentra el archivo que se quiere abrir. Asegúrese de que se encuentra en la ruta de 'archivos' del programa.")
     else:
-        hilo_operador = Thread(target=operador.actualizar_precios_doble, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
-        hilo_operador.start()
+        tkinter.messagebox.showerror("Error","El campo del nombre del excel está vacío.")
+
+    
     
 
 # Creamos la función que el botón "Obtener sesiones" ejecutará.

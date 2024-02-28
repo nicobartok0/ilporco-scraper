@@ -42,24 +42,29 @@ class Operador:
         
         # Creamos una lista de los artículos de Maxiconsumo sin precio para después buscarlos en Oscar David
 
-        articulos_extra = {}
+        maxiconsumo_sinprecio = {}
         for key in self.maxiconsumo.keys():
             if self.maxiconsumo[key][4] == 'Sin precio':
-                articulos_extra[key] = self.maxiconsumo[key] 
+                maxiconsumo_sinprecio[key] = self.maxiconsumo[key]
 
         self.andina = self.valuador_andina.get_prices(self.andina, progress, self.valuador_maxiconsumo.contador, currentarticle)
         self.oscar_david = self.valuador_oscar_david.get_prices(self.oscar_david, progress, self.valuador_andina.contador, currentarticle)
         self.la_serenisima = self.valuador_serenisima.get_prices(self.la_serenisima, progress, self.valuador_oscar_david.contador, currentarticle)
 
         # Buscamos los artículos extra en Oscar David
-        articulos_extra = self.scanner.intercode_od(articulos_extra)
+        maxiconsumo_sinprecio = self.scanner.intercode_maxi(maxiconsumo_sinprecio)
         currentarticle.set('BUSCANDO PRECIOS NULOS EN OSCAR DAVID...')
-        articulos_extra = self.valuador_oscar_david.get_prices_simple(articulos_extra)
-        print(articulos_extra)
-        # Añadimos los artículos extra al diccionario de Maxiconsumo
-        for key in articulos_extra.keys():
-            self.maxiconsumo[key] = articulos_extra[key]
+        maxiconsumo_sinprecio = self.valuador_oscar_david.get_prices_simple(maxiconsumo_sinprecio)
         
+        # Añadimos los artículos extra al diccionario de Maxiconsumo
+        print('ANTES: ')
+        print(f'{self.maxiconsumo}')
+        for key in maxiconsumo_sinprecio.keys():
+            self.maxiconsumo[key] = maxiconsumo_sinprecio[key]
+        print('DESPUÉS: ')
+        print(self.maxiconsumo)
+        
+
         self.scanner.actualizar_precios(self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima)
         os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{nuevonombre}"')
         progresswindow.destroy()

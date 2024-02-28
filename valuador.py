@@ -57,6 +57,7 @@ class Valuador_Maxiconsumo:
 
     # Método para obtener los precios de los artículos de maxiconsumo
     def get_prices(self, maxiconsumo, progress, currentarticle):
+        print(progress.get())
         self.sku_list = []
         article_names = {}
         for key in maxiconsumo.keys():
@@ -312,11 +313,26 @@ class Valuador_Oscar_David:
 
     # Método simplificado para obtener los precios de los articulos de Oscar David
     def get_prices_simple(self, articulos_extra):
-        self.sku_list = []
-        article_names = {}
+
+        # Sacamos de la lista todos aquellos artículos sin código
+        articulos_final = {}
         for key in articulos_extra.keys():
-            self.sku_list.append(articulos_extra[key][3])
-            article_names[articulos_extra[key][3]] = articulos_extra[key][0]
+            if articulos_extra[key][3] != '':
+                articulos_final[key] = articulos_extra[key]
+
+
+        self.sku_list = []
+        self.precios = []
+        article_names = {}
+        for key in articulos_final.keys():
+            self.sku_list.append(articulos_final[key][3])
+            article_names[articulos_final[key][3]] = articulos_final[key][0]
+        
+        contador=0
+        for key in articulos_final.keys():
+            print(f'Al artículo {key}: {articulos_final[key]}, le corresponde el SKU {self.sku_list[contador]}')
+            print('\n')
+            contador+=1 
         
         for key in self.sku_list:
 
@@ -349,12 +365,12 @@ class Valuador_Oscar_David:
                 self.precios.append('Sin precio (Ni en Maxiconsumo ni en Oscar David)')
 
         count = 0
-
-        for key in articulos_extra.keys():
-            articulos_extra[key][4] = self.precios[count]
-            if count < len(articulos_extra.keys())-1:
+        
+        for key in articulos_final.keys():
+            articulos_final[key][4] = self.precios[count]
+            if count < len(articulos_final.keys())-1:
                 count+=1
-        return articulos_extra
+        return articulos_final
     
 class Valuador_La_Serenisima():
 
