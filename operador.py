@@ -57,12 +57,9 @@ class Operador:
         maxiconsumo_sinprecio = self.valuador_oscar_david.get_prices_simple(maxiconsumo_sinprecio)
         
         # Añadimos los artículos extra al diccionario de Maxiconsumo
-        print('ANTES: ')
-        print(f'{self.maxiconsumo}')
         for key in maxiconsumo_sinprecio.keys():
             self.maxiconsumo[key] = maxiconsumo_sinprecio[key]
-        print('DESPUÉS: ')
-        print(self.maxiconsumo)
+        
         
 
         self.scanner.actualizar_precios(self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima)

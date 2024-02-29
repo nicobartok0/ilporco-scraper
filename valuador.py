@@ -57,7 +57,6 @@ class Valuador_Maxiconsumo:
 
     # Método para obtener los precios de los artículos de maxiconsumo
     def get_prices(self, maxiconsumo, progress, currentarticle):
-        print(progress.get())
         self.sku_list = []
         article_names = {}
         for key in maxiconsumo.keys():
@@ -330,8 +329,6 @@ class Valuador_Oscar_David:
         
         contador=0
         for key in articulos_final.keys():
-            print(f'Al artículo {key}: {articulos_final[key]}, le corresponde el SKU {self.sku_list[contador]}')
-            print('\n')
             contador+=1 
         
         for key in self.sku_list:
