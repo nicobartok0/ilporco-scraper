@@ -10,7 +10,7 @@ import os
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("680x320")
-root.title('Il Porco Scraper 4.3')
+root.title('Il Porco Scraper 4.4')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()

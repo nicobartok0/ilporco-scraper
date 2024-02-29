@@ -17,6 +17,7 @@ class Lector:
         self.name_list = []
         self.prov_list = []
         self.code_list = []
+        self.date_list = []
         self.datos = {}
 
     # Método que toma los SKU's de la primer fila del excel.
@@ -50,6 +51,13 @@ class Lector:
                 valor = str(column_data.value)
                 self.prov_list.append(valor)
         return self.prov_list
+    
+    def obtener_fechas(self):
+        for column_data in self.ws['H']:
+            if column_data.value != None:
+                valor = str(column_data.value)
+                self.date_list.append(valor)
+        return self.date_list
 
     # Método que toma los datos utilizando los métodos anteriores
     def obtener_datos(self):
@@ -58,13 +66,18 @@ class Lector:
         Lector.obtener_codigo(self)
         Lector.obtener_nombres(self)
         Lector.obtener_proveedor(self)
+        Lector.obtener_fechas(self)
+        self.codigo_fecha = {}
         for code in range(len(self.code_list)):
             dataline.append(self.name_list[code])
             dataline.append(self.sku_list[code])
             dataline.append(self.prov_list[code])
             self.datos[self.code_list[code]] = dataline
             dataline = []  
-
+        contador = 0
+        for key in self.datos.keys():
+            self.codigo_fecha[key] = self.date_list[contador]
+            contador +=1
         return self.datos
 
     # Método que separa por proveedor toda la información del excel
@@ -228,6 +241,18 @@ class Lector:
                 serenisima[key].append('')
         return serenisima
 
+    # Método que añade las fechas a los artículos antes de actualizar los precios.
+    def anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima):
+        for key in maxiconsumo.keys():
+            maxiconsumo[key].append(self.codigo_fecha[key])
+        for key in andina.keys():
+            andina[key].append(self.codigo_fecha[key])
+        for key in oscar_david.keys():
+            oscar_david[key].append(self.codigo_fecha[key])
+        for key in serenisima.keys():
+            serenisima[key].append(self.codigo_fecha[key])
+        
+        return maxiconsumo, andina, oscar_david, serenisima
 
     # Método que actualiza los precios en un excel actualizado
     def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima):
@@ -241,6 +266,9 @@ class Lector:
         ws_act.cell(1, 4, 'Distribuidor')
         ws_act.cell(1, 5, 'Cód. Externo')
         ws_act.cell(1, 6, 'Nuevo Precio')
+        ws_act.cell(1, 7, 'Última fecha')
+
+        maxiconsumo, andina, oscar_david, serenisima = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima)
         for key in maxiconsumo.keys():
             ws_act.cell(i+1, 1, key)
             ws_act.cell(i+1, 2, maxiconsumo[key][0])
@@ -248,6 +276,7 @@ class Lector:
             ws_act.cell(i+1, 4, maxiconsumo[key][2])
             ws_act.cell(i+1, 5, maxiconsumo[key][3])
             ws_act.cell(i+1, 6, maxiconsumo[key][4])
+            ws_act.cell(i+1, 7, maxiconsumo[key][5])
             i+=1
         for key in andina.keys():
             ws_act.cell(i+1, 1, key)
@@ -256,6 +285,7 @@ class Lector:
             ws_act.cell(i+1, 4, andina[key][2])
             ws_act.cell(i+1, 5, andina[key][3])
             ws_act.cell(i+1, 6, andina[key][4])
+            ws_act.cell(i+1, 7, andina[key][5])
             i+=1
         for key in oscar_david.keys():
             ws_act.cell(i+1, 1, key)
@@ -264,6 +294,7 @@ class Lector:
             ws_act.cell(i+1, 4, oscar_david[key][2])
             ws_act.cell(i+1, 5, oscar_david[key][3])
             ws_act.cell(i+1, 6, oscar_david[key][4])
+            ws_act.cell(i+1, 7, oscar_david[key][5])
             i+=1
         for key in serenisima.keys():
             ws_act.cell(i+1, 1, key)
@@ -272,6 +303,7 @@ class Lector:
             ws_act.cell(i+1, 4, serenisima[key][2])
             ws_act.cell(i+1, 5, serenisima[key][3])
             ws_act.cell(i+1, 6, serenisima[key][4])
+            ws_act.cell(i+1, 7, serenisima[key][5])
             i+=1
         wb_act.save('archivos/'+nombre_archivo)
 

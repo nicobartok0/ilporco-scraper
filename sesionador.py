@@ -3,12 +3,18 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import sys, os
 
+
+
 class Sesionador:
+
     # Definimos los atributos de nuestro sesionador, que en este caso será la inicialización del Webdriver
     def __init__(self):
         chromedriver_path = f'{os.getcwd()}\\assets\\chromedriver.exe'
         sys.path.insert(0,chromedriver_path)
-        self.driver = webdriver.Chrome(executable_path=chromedriver_path)
+        if os.name != 'posix': 
+            self.driver = webdriver.Chrome(executable_path=chromedriver_path)
+        else:
+            self.driver = webdriver.Chrome()
 
     # Definimos la función en la que buscaremos el id de sesión de Maxiconsumo
     def sesionar_maxiconsumo(self, user, pswd):
