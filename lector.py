@@ -1,4 +1,5 @@
 from openpyxl import load_workbook, Workbook
+import cryptocode
 
 # Clase del scaner del libro de excel. El libro debe estar en el mismo
 # directorio que el módulo.
@@ -306,6 +307,49 @@ class Lector:
             ws_act.cell(i+1, 7, serenisima[key][5])
             i+=1
         wb_act.save('archivos/'+nombre_archivo)
+
+class Administrador_de_credenciales:
+    def __init__(self):
+        self.wb_credenciales = load_workbook('assets/credenciales.xlsx')
+        self.ws_credenciales = self.wb_credenciales['Hoja1']
+
+    def obtener_credenciales(self):
+        maxi_user = ''
+        maxi_pswd = ''
+        sere_user = '' 
+        sere_pswd = ''
+        maxi_user = self.ws_credenciales['B1'].value
+        maxi_pswd = cryptocode.decrypt(self.ws_credenciales['B2'].value, 'ilporco')
+        sere_user = self.ws_credenciales['D1'].value
+        sere_pswd = cryptocode.decrypt(self.ws_credenciales['D2'].value, 'ilporco')
+        return maxi_user, maxi_pswd, sere_user, sere_pswd
+
+    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd):
+        self.ws_credenciales['B1'] = maxi_user
+        self.ws_credenciales['B2'] = cryptocode.encrypt(maxi_pswd, 'ilporco')
+        self.ws_credenciales['D1'] = sere_user
+        self.ws_credenciales['D2'] = cryptocode.encrypt(sere_pswd, 'ilporco')
+        self.wb_credenciales.save('assets/credenciales.xlsx')
+
+class Administrador_Intermedia:
+    def __init__(self):
+        self.wb = load_workbook('assets/tabla-intermedia.xlsx')
+        self.ws_od = self.wb['Oscar-David']
+        self.ws_and = self.wb['Andina']
+        self.ws_sere = self.wb['La-Serenisima']
+
+    def añadir_articulo(self, sku, ilporco, nombre, codigo, destino:str):
+        data = [sku, ilporco, nombre, codigo]
+        if destino == 'Oscar David':
+            self.ws_od.append(data)
+        elif destino == 'Andina':
+            self.ws_and.append(data)
+        else:
+            self.ws_sere.append(data)
+        self.wb.save('assets/tabla-intermedia.xlsx')
+
+    
+        
 
 
 

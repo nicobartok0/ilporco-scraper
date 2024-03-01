@@ -1,4 +1,5 @@
 from operador import Operador
+from lector import Administrador_de_credenciales
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -27,6 +28,10 @@ maxi_pswd = StringVar()
 sere_user = StringVar()
 sere_pswd = StringVar()
 busqueda = BooleanVar()
+new_mu = tk.StringVar()
+new_mp = tk.StringVar()
+new_su = tk.StringVar()
+new_sp = tk.StringVar()
 
 # Creamos la imagen de Il Porco que será usada como ícono de la aplicación.
 
@@ -116,6 +121,57 @@ def sesionar(sessionwindow):
     serenisima_id_label.set(serenisima_sess_id)
     sessionwindow.destroy()
 
+# Creamos las funciones del menú de opciones
+def cargar_credenciales():
+    administrador = Administrador_de_credenciales()
+    user1, pswd1, user2, pswd2 = administrador.obtener_credenciales()
+    maxi_user.set(user1)
+    maxi_pswd.set(pswd1)
+    sere_user.set(user2)
+    sere_pswd.set(pswd2)
+    tkinter.messagebox.showinfo('Credenciales cargadas', 'Credenciales cargadas con éxito desde el archivo local')
+
+def ventana_editar_credenciales():
+    ventana_credenciales = tk.Toplevel(root)
+    ventana_credenciales.geometry('500x400')
+    ventana_credenciales.title('Edición de credenciales')
+    ttk.Label(ventana_credenciales, text='Edición de credenciales').grid(column=1, row=0)
+    ttk.Label(ventana_credenciales, text='Nuevo correo de Maxiconsumo: ').grid(column=0, row=1)
+    ttk.Label(ventana_credenciales, text='Nueva contraseña de Maxiconsumo: ').grid(column=0, row=2)
+    ttk.Label(ventana_credenciales, text='Nuevo correo de La Serenísima: ').grid(column=0, row=3)
+    ttk.Label(ventana_credenciales, text='Nueva contraseña de La Serenísima: ').grid(column=0, row=4)
+    ttk.Entry(ventana_credenciales, textvariable=new_mu).grid(column=2, row=1)
+    ttk.Entry(ventana_credenciales, textvariable=new_mp, show='*').grid(column=2, row=2)
+    ttk.Entry(ventana_credenciales, textvariable=new_su).grid(column=2, row=3)
+    ttk.Entry(ventana_credenciales, textvariable=new_sp, show='*').grid(column=2, row=4)
+    ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales)).grid(column=2, row=5)
+    
+
+
+def editar_credenciales(ventana_credenciales):
+    administrador = Administrador_de_credenciales()
+    administrador.escribir_credenciales(maxi_user=new_mu.get(), maxi_pswd=new_mp.get(), sere_user=new_su.get(), sere_pswd=new_sp.get())
+    tkinter.messagebox.showinfo('Credenciales Actualizadas', 'Las credenciales han sido actualizadas con éxito en su programa local.')
+    ventana_credenciales.destroy()
+    
+
+def ventana_mod_tabla_intermedia():
+    ventana_mod_ti = tk.Toplevel(root)
+    ventana_mod_ti.geometry('300x500')
+    ventana_mod_ti.title('Modificación de tabla intermedia')
+
+    ttk.Label(ventana_mod_ti, text='Modificar tabla intermedia')
+
+
+def mod_tabla_intermedia():
+    print('Modificar tabla intermedia')
+
+def obtener_ruta():
+    print('Obtener ruta alternativa')
+
+def info():
+    print('Info')
+
 # -- Creación de widgets
     
 # Creamos las labels de texto
@@ -141,6 +197,23 @@ ttk.Entry(frame, textvariable=nombre_label).grid(column=1, row=5, pady=10)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
 ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=6)
 ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=6)
+
+# Creamos el menú de opciones
+menubar = tk.Menu(root)
+root.config(menu=menubar)
+opciones_menu = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label='Opciones', menu=opciones_menu)
+# Añadimos las opciones
+opciones_menu.add_command(label='Abrir sesionador', command=ventana_sesiones)
+opciones_menu.add_command(label='Cargar credenciales', command=cargar_credenciales)
+opciones_menu.add_command(label='Editar credenciales', command=ventana_editar_credenciales)
+opciones_menu.add_command(label='Modificar tabla intermedia', command=ventana_mod_tabla_intermedia)
+opciones_menu.add_command(label='Obtener archivo desde ruta alterna', command=obtener_ruta)
+opciones_menu.add_command(label='Información y ayuda', command=info)
+opciones_menu.add_separator()
+opciones_menu.add_command(label='Salir', command=root.destroy)
+
+
 
 # Creamos la checkbox para decirle al programa si es necesario buscar los elementos "Sin Precio" de Maxiconsumo en Oscar David
 ttk.Checkbutton(frame, text='Buscar "Sin Precio" en Oscar David', variable=busqueda).grid(column=0, row=7)

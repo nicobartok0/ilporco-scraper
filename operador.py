@@ -70,3 +70,11 @@ class Operador:
     def cantidad_datos(self):
         self.datos_totales = self.scanner.obtener_datos()
         return len(self.datos_totales) - 1
+    
+    def obtener_credenciales(self):
+        maxi_user, maxi_pswd, sere_user, sere_pswd = self.scanner.obtener_credenciales()
+        return maxi_user, maxi_pswd, sere_user, sere_pswd
+    
+    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd):
+        self.scanner.escribir_credenciales(maxi_user, maxi_pswd, sere_user, sere_pswd)
+
