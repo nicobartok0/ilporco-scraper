@@ -1,9 +1,10 @@
 from operador import Operador
-from lector import Administrador_de_credenciales
+from lector import Administrador_de_credenciales, Administrador_Intermedia
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 import tkinter.messagebox
+import tkinter.filedialog
 from threading import Thread
 from sesionador import Sesionador
 import os
@@ -11,7 +12,7 @@ import os
 # Se genera el elemento base de tkinter
 root = Tk()
 root.geometry("680x320")
-root.title('Il Porco Scraper 4.4')
+root.title('Il Porco Scraper 4.6')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -32,6 +33,11 @@ new_mu = tk.StringVar()
 new_mp = tk.StringVar()
 new_su = tk.StringVar()
 new_sp = tk.StringVar()
+ti_sku = tk.StringVar()
+ti_ilporco = tk.StringVar()
+ti_nombre = tk.StringVar()
+ti_codigo = tk.StringVar()
+ruta = tk.StringVar()
 
 # Creamos la imagen de Il Porco que será usada como ícono de la aplicación.
 
@@ -52,11 +58,11 @@ for dir in dirs:
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
 
-    if nombre_label != '':
+    if nombre_label != '' or ruta.get() != '':
         # Creamos el directorio del archivo que buscamos
         searchdir = f'{os.getcwd()}\\{nombre_label.get()}'
         # Comprobamos si el directorio existe
-        if searchdir in listdirs:
+        if searchdir in listdirs or ruta.get() != '':
             progresswindow = Toplevel(root)
             
             progresswindow.title('Progreso')
@@ -65,7 +71,9 @@ def boton():
             nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
             progress = IntVar()
             # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
-            operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()))
+            if ruta.get() == '':
+                ruta.set(f'{os.getcwd()}\\archivos\\{nombre_label.get()}.xlsx')
+            operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()), ruta=ruta.get())
             barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
             barra.grid(column=0, row=1, padx=10, pady=10)
             ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
@@ -133,18 +141,18 @@ def cargar_credenciales():
 
 def ventana_editar_credenciales():
     ventana_credenciales = tk.Toplevel(root)
-    ventana_credenciales.geometry('500x400')
+    ventana_credenciales.geometry('500x250')
     ventana_credenciales.title('Edición de credenciales')
     ttk.Label(ventana_credenciales, text='Edición de credenciales').grid(column=1, row=0)
-    ttk.Label(ventana_credenciales, text='Nuevo correo de Maxiconsumo: ').grid(column=0, row=1)
-    ttk.Label(ventana_credenciales, text='Nueva contraseña de Maxiconsumo: ').grid(column=0, row=2)
-    ttk.Label(ventana_credenciales, text='Nuevo correo de La Serenísima: ').grid(column=0, row=3)
-    ttk.Label(ventana_credenciales, text='Nueva contraseña de La Serenísima: ').grid(column=0, row=4)
+    ttk.Label(ventana_credenciales, text='Nuevo correo de Maxiconsumo: ').grid(column=0, row=1, pady=10, padx=5)
+    ttk.Label(ventana_credenciales, text='Nueva contraseña de Maxiconsumo: ').grid(column=0, row=2, pady=10, padx=5)
+    ttk.Label(ventana_credenciales, text='Nuevo correo de La Serenísima: ').grid(column=0, row=3, pady=10, padx=5)
+    ttk.Label(ventana_credenciales, text='Nueva contraseña de La Serenísima: ').grid(column=0, row=4, pady=10, padx=5)
     ttk.Entry(ventana_credenciales, textvariable=new_mu).grid(column=2, row=1)
     ttk.Entry(ventana_credenciales, textvariable=new_mp, show='*').grid(column=2, row=2)
     ttk.Entry(ventana_credenciales, textvariable=new_su).grid(column=2, row=3)
     ttk.Entry(ventana_credenciales, textvariable=new_sp, show='*').grid(column=2, row=4)
-    ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales)).grid(column=2, row=5)
+    ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales)).grid(column=2, row=5, pady=10)
     
 
 
@@ -157,20 +165,44 @@ def editar_credenciales(ventana_credenciales):
 
 def ventana_mod_tabla_intermedia():
     ventana_mod_ti = tk.Toplevel(root)
-    ventana_mod_ti.geometry('300x500')
+    ventana_mod_ti.geometry('670x100')
     ventana_mod_ti.title('Modificación de tabla intermedia')
 
-    ttk.Label(ventana_mod_ti, text='Modificar tabla intermedia')
+    ttk.Label(ventana_mod_ti, text='SKU del Artículo').grid(column=0, row=1, padx=10)
+    ttk.Label(ventana_mod_ti, text='Cód. de Il Porco').grid(column=1, row=1, padx=10)
+    ttk.Label(ventana_mod_ti, text='Nombre del Artículo').grid(column=2, row=1, padx=10)
+    ttk.Label(ventana_mod_ti, text='Cód. de Distribuidora').grid(column=3, row=1, padx=10)
+    ttk.Entry(ventana_mod_ti, textvariable=ti_sku).grid(column=0, row=2, padx=10)
+    ttk.Entry(ventana_mod_ti, textvariable=ti_ilporco).grid(column=1, row=2, padx=10)
+    ttk.Entry(ventana_mod_ti, textvariable=ti_nombre).grid(column=2, row=2, padx=10)
+    ttk.Entry(ventana_mod_ti, textvariable=ti_codigo).grid(column=3, row=2, padx=10)
+    ttk.Button(ventana_mod_ti, command=lambda: añadir_tabla_intermedia(destino=proveedor.get()), text='Añadir artículo').grid(column=1, row=3, padx=10)
+    ttk.Button(ventana_mod_ti, command=lambda: quitar_tabla_intermedia(destino=proveedor.get()), text='Eliminar artículo').grid(column=2, row=3, padx=10)
+    proveedor = ttk.Combobox(ventana_mod_ti, values=['Andina', 'Oscar David', 'La Serenísima'])
+    proveedor.current(0)
+    proveedor.grid(column=3, row=3, padx=10)
 
 
-def mod_tabla_intermedia():
-    print('Modificar tabla intermedia')
+def añadir_tabla_intermedia(destino):
+    administrador_ti = Administrador_Intermedia()
+    administrador_ti.añadir_articulo(sku=ti_sku.get(), ilporco=ti_ilporco.get(), nombre=ti_nombre.get(), codigo=ti_codigo.get(), destino=destino)
+    tkinter.messagebox.showinfo(f'Artículo {ti_ilporco.get()} añadido con éxito',f'{ti_nombre.get()} añadido con éxito a {destino}')
+
+def quitar_tabla_intermedia(destino):
+    administrador_ti = Administrador_Intermedia()
+    administrador_ti.quitar_articulo(codigo=ti_ilporco.get(), destino=destino)
+    tkinter.messagebox.showinfo(f'Artículo {ti_ilporco.get()} eliminado con éxito', f'El artículo de código {ti_ilporco.get()} ha sido eliminado con éxito.')
+
+def abrir_tabla_intermedia():
+    os.system(f'start excel.exe "{os.getcwd()}\\assets\\tabla-intermedia.xlsx"')
 
 def obtener_ruta():
-    print('Obtener ruta alternativa')
+    ruta.set(tkinter.filedialog.askopenfilename())
+    if ruta.get() != '':
+        entry_principal.config(state='disabled')
 
 def info():
-    print('Info')
+    os.system(f'start {os.getcwd()}\\assets\\Instructivo-Scraper.pdf')
 
 # -- Creación de widgets
     
@@ -191,7 +223,8 @@ ttk.Entry(frame, textvariable=maxi_id_label).grid(column=1, row=1, pady=10)
 ttk.Entry(frame, textvariable=andina_id_label).grid(column=1, row=2, pady=10)
 ttk.Entry(frame, textvariable=od_id_label).grid(column=1, row=3, pady=10)
 ttk.Entry(frame, textvariable=serenisima_id_label).grid(column=1, row=4, pady=10)
-ttk.Entry(frame, textvariable=nombre_label).grid(column=1, row=5, pady=10)
+entry_principal = ttk.Entry(frame, textvariable=nombre_label)
+entry_principal.grid(column=1, row=5, pady=10)
 
 # Creamos los botones con sus respectivos comandos (salir del programa y iniciar búsqueda)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
@@ -208,6 +241,7 @@ opciones_menu.add_command(label='Abrir sesionador', command=ventana_sesiones)
 opciones_menu.add_command(label='Cargar credenciales', command=cargar_credenciales)
 opciones_menu.add_command(label='Editar credenciales', command=ventana_editar_credenciales)
 opciones_menu.add_command(label='Modificar tabla intermedia', command=ventana_mod_tabla_intermedia)
+opciones_menu.add_command(label='Abrir tabla intermedia', command=abrir_tabla_intermedia)
 opciones_menu.add_command(label='Obtener archivo desde ruta alterna', command=obtener_ruta)
 opciones_menu.add_command(label='Información y ayuda', command=info)
 opciones_menu.add_separator()

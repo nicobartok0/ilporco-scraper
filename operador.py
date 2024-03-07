@@ -5,9 +5,9 @@ from tkinter import ttk
 import os
 
 class Operador:
-    def __init__(self, maxiconsumo_sess_id, andina_sess_id, oscar_david_sess_id, la_serenisima_sess_id,nombre_excel):
+    def __init__(self, maxiconsumo_sess_id, andina_sess_id, oscar_david_sess_id, la_serenisima_sess_id,nombre_excel, ruta):
         self.nombre_excel = nombre_excel
-        self.scanner = Lector(nombre_excel)
+        self.scanner = Lector(nombre_excel, ruta)
         self.valuador_maxiconsumo = Valuador_Maxiconsumo(maxiconsumo_sess_id)
         self.valuador_andina = Valuador_Andina(andina_sess_id)
         self.valuador_oscar_david = Valuador_Oscar_David(oscar_david_sess_id)
@@ -71,10 +71,4 @@ class Operador:
         self.datos_totales = self.scanner.obtener_datos()
         return len(self.datos_totales) - 1
     
-    def obtener_credenciales(self):
-        maxi_user, maxi_pswd, sere_user, sere_pswd = self.scanner.obtener_credenciales()
-        return maxi_user, maxi_pswd, sere_user, sere_pswd
-    
-    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd):
-        self.scanner.escribir_credenciales(maxi_user, maxi_pswd, sere_user, sere_pswd)
 
