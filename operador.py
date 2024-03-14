@@ -16,7 +16,7 @@ class Operador:
 
     def actualizar_precios(self, progress, nuevonombre, progresswindow, currentarticle):
         
-        
+        print('Actualizando precios...')
         self.contador = 0
         self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima, self.nodata = self.scanner.separar_por_proveedor()
         self.andina = self.scanner.intercode_andina(self.andina)
@@ -26,6 +26,7 @@ class Operador:
         self.andina = self.valuador_andina.get_prices(self.andina, progress, self.valuador_maxiconsumo.contador, currentarticle)
         self.oscar_david = self.valuador_oscar_david.get_prices(self.oscar_david, progress, self.valuador_andina.contador, currentarticle)
         self.la_serenisima = self.valuador_serenisima.get_prices(self.la_serenisima, progress, self.valuador_oscar_david.contador, currentarticle)
+        self.scanner.adaptar(self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima)
         self.scanner.actualizar_precios(self.maxiconsumo, self.andina, self.oscar_david, self.la_serenisima)
         os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{nuevonombre}"')
         progresswindow.destroy()

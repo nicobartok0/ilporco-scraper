@@ -11,8 +11,8 @@ import os
 
 # Se genera el elemento base de tkinter
 root = Tk()
-root.geometry("680x320")
-root.title('Il Porco Scraper 4.6')
+root.geometry("780x360")
+root.title('Il Porco Scraper 4.7')
 # Creamos un frame dentro de la ventana
 frame = ttk.Frame(root, padding=10)
 frame.grid()
@@ -42,6 +42,8 @@ ruta = tk.StringVar()
 # Creamos la imagen de Il Porco que será usada como ícono de la aplicación.
 
 logo = PhotoImage(file='assets/ilporcologo.png')
+search = PhotoImage(file='assets/search.png')
+search = search.subsample(25, 25)
 root.iconphoto(True, logo)
 
 # Obtenemos los directorios de los archivos dentro de la carpeta "archivos"
@@ -58,39 +60,28 @@ for dir in dirs:
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
 
-    if nombre_label != '' or ruta.get() != '':
-        # Creamos el directorio del archivo que buscamos
-        searchdir = f'{os.getcwd()}\\{nombre_label.get()}'
-        # Comprobamos si el directorio existe
-        if searchdir in listdirs or ruta.get() != '':
-            progresswindow = Toplevel(root)
-            
-            progresswindow.title('Progreso')
-            progresswindow.geometry('420x100')
-            ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
-            nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-            progress = IntVar()
-            # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
-            if ruta.get() == '':
-                ruta.set(f'{os.getcwd()}\\archivos\\{nombre_label.get()}.xlsx')
-            operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()), ruta=ruta.get())
-            barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
-            barra.grid(column=0, row=1, padx=10, pady=10)
-            ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
-
-            # Ejecutamos la obtención de precios desde el operador en un hilo aparte
-            nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
-            if busqueda.get() == False:
-                hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
-                hilo_operador.start()
-            else:
-                hilo_operador = Thread(target=operador.actualizar_precios_doble, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
-                hilo_operador.start()
-        else:
-            tkinter.messagebox.showerror('Error', f'El archivo solicitado no está en el directorio de archivos. Pruebe a colocarlo en {os.getcwd()}\\archivos')
+    progresswindow = Toplevel(root)
     
+    progresswindow.title('Progreso')
+    progresswindow.geometry('420x100')
+    ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
+    nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+    progress = IntVar()
+    # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
+    global operador
+    operador = Operador(maxiconsumo_sess_id=str(maxi_id_label.get()), andina_sess_id=str(andina_id_label.get()), oscar_david_sess_id=str(od_id_label.get()), la_serenisima_sess_id=str(serenisima_id_label.get()), nombre_excel=str(nombre_label.get()), ruta=ruta.get())
+    barra = ttk.Progressbar(progresswindow, max=float(operador.cantidad_datos()), length=400, variable=progress)
+    barra.grid(column=0, row=1, padx=10, pady=10)
+    ttk.Label(progresswindow, textvariable=currentarticle).grid(column=0, row=2)
+
+    # Ejecutamos la obtención de precios desde el operador en un hilo aparte
+    nuevonombre = f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
+    if busqueda.get() == False:
+        hilo_operador = Thread(target=operador.actualizar_precios, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+        hilo_operador.start()
     else:
-        tkinter.messagebox.showerror("Error","El campo del nombre del excel está vacío.")
+        hilo_operador = Thread(target=operador.actualizar_precios_doble, args=(progress,nuevonombre, progresswindow, currentarticle), daemon=True)
+        hilo_operador.start()
 
     
     
@@ -198,8 +189,14 @@ def abrir_tabla_intermedia():
 
 def obtener_ruta():
     ruta.set(tkinter.filedialog.askopenfilename())
-    if ruta.get() != '':
-        entry_principal.config(state='disabled')
+    index = ruta.get().split('/')
+    nombre = index[-1]
+    nombre = nombre[:-5]
+    nombre_label.set(nombre)
+
+def vincular():
+    print(f'Datos: \nMaxiconsumo\n{operador.maxiconsumo} \nOscar David\n{operador.oscar_david} \nAndina\n {operador.andina}\nLa Serenísima\n {operador.la_serenisima}')
+    
 
 def info():
     os.system(f'start {os.getcwd()}\\assets\\Instructivo-Scraper.pdf')
@@ -212,7 +209,7 @@ ttk.Label(frame, text='Ingrese el ID de Sesión de Maxiconsumo: ').grid(column=0
 ttk.Label(frame, text='Ingrese el ID de Andina: ').grid(column=0, row=2)
 ttk.Label(frame, text='Ingrese el ID de Sesión de Oscar David: ').grid(column=0, row=3)
 ttk.Label(frame, text='Ingrese el ID de Sesión de La Serenísima: ').grid(column=0, row=4)
-ttk.Label(frame, text='Ingrese el nombre del libro de Excel: ').grid(column=0, row=5)
+ttk.Label(frame, text='Libro de EXCEL: ').grid(column=0, row=5)
 disclaimer = ttk.Label(frame, text='* Versión funcional con distribuidores: Maxiconsumo, Andina, Oscar David y La Serenísima')
 disclaimer.grid(column=0, row=8, pady=20)
 disclaimer.config(font=("Courier", 6))
@@ -223,13 +220,15 @@ ttk.Entry(frame, textvariable=maxi_id_label).grid(column=1, row=1, pady=10)
 ttk.Entry(frame, textvariable=andina_id_label).grid(column=1, row=2, pady=10)
 ttk.Entry(frame, textvariable=od_id_label).grid(column=1, row=3, pady=10)
 ttk.Entry(frame, textvariable=serenisima_id_label).grid(column=1, row=4, pady=10)
-entry_principal = ttk.Entry(frame, textvariable=nombre_label)
+entry_principal = ttk.Label(frame, textvariable=nombre_label)
 entry_principal.grid(column=1, row=5, pady=10)
+ttk.Button(frame, image=search, command=obtener_ruta).grid(column=2, row=5, pady=10)
 
 # Creamos los botones con sus respectivos comandos (salir del programa y iniciar búsqueda)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
 ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=6)
 ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=6)
+ttk.Button(frame, text='Vincular datos con Sistema Principal', command=vincular).grid(column=1, row=7, pady=10)
 
 # Creamos el menú de opciones
 menubar = tk.Menu(root)

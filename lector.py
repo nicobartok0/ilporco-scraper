@@ -254,6 +254,27 @@ class Lector:
             serenisima[key].append(self.codigo_fecha[key])
         
         return maxiconsumo, andina, oscar_david, serenisima
+    
+    def adaptar(self, maxiconsumo, andina, oscar_david, la_serenisima):
+        print('MAXICONSUMO: ')
+        for key in maxiconsumo.keys():
+            print(f'type: {type(maxiconsumo[key][4])}')
+            if '$' in maxiconsumo[key][4]:
+                print(f'{key}: {maxiconsumo[key][4][2:]}')
+        print('ANDINA: ')
+        for key in andina.keys():
+            print(f'type: {type(andina[key][4])}')
+            print(f'{key}: {andina[key][4]}')
+        print('OSCAR DAVID: ')
+        for key in oscar_david.keys():
+            print(f'type: {type(oscar_david[key][4])}')
+            print(f'{key}: {oscar_david[key][4]}')
+        print('LA SERENÍSIMA: ')
+        for key in la_serenisima.keys():
+            print(f'type: {type(la_serenisima[key][4])}')
+            print(f'{key}: {la_serenisima[key][4]}')
+
+        return maxiconsumo, andina, oscar_david, la_serenisima
 
     # Método que actualiza los precios en un excel actualizado
     def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima):
