@@ -14,6 +14,7 @@ class Lector:
         self.andina_codesheet = self.intermedia['Andina']
         self.od_codesheet = self.intermedia['Oscar-David']
         self.ser_codesheet = self.intermedia['La-Serenisima']
+        self.bees_codesheet = self.intermedia['Bees']
         self.sku_list = []
         self.name_list = []
         self.prov_list = []
@@ -87,6 +88,8 @@ class Lector:
         self.andina = {}
         self.oscar_david = {}
         self.serenisima = {}
+        self.bees_alv = {}
+        self.bees_sr = {}
         self.nodata = {}
         for key in self.datos.keys():
             if 'MAXICONSUMO' in self.datos[key][2]:
@@ -97,10 +100,14 @@ class Lector:
                 self.oscar_david[key] = self.datos[key]
             elif 'SERENISIMA' in self.datos[key][2]:
                 self.serenisima[key] = self.datos[key]
+            elif 'SANTO GUILIANO' in self.datos[key][2]:
+                self.bees_alv[key] = self.datos[key]
+            elif 'JOSE ESTABAN PANELLA S.A.' in self.datos[key][2]:
+                self.bees_sr[key] = self.datos[key]
             else:
                 self.nodata[key] = self.datos[key]
 
-        return self.maxiconsumo, self.andina, self.oscar_david, self.serenisima, self.nodata
+        return self.maxiconsumo, self.andina, self.oscar_david, self.serenisima, self.bees_alv, self.bees_sr, self.nodata
 
     # Método que le asigna a cada artículo de Andina un código interno de la tabla intermedia
     def intercode_andina(self, andina):
@@ -113,11 +120,9 @@ class Lector:
         for and_code in self.andina_codesheet['D']:
             if and_code.value != None and and_code.value != 'Andina':
                 and_codes.append(str(int(and_code.value)))
-        #new_andina = {}
         for code in codes:
             try:
                 andina[code].append(and_codes[counter])
-                #new_andina[and_codes[counter]] = andina[code]
             except:
                 pass
             counter +=1
@@ -172,6 +177,8 @@ class Lector:
             except:
                 maxiconsumo[key][3] = ''
         return maxiconsumo
+
+
 
     def intercode_od(self, oscar_david):
         codes = []
@@ -242,8 +249,34 @@ class Lector:
                 serenisima[key].append('')
         return serenisima
 
+    def intercode_bees(self, bees):
+        codes = []
+        bees_codes = []
+        counter = 0
+        for code in self.bees_codesheet['B']:
+            if code.value != None and code.value != 'Ilporco':
+                codes.append(str(int(code.value)))
+        for bees_code in self.bees_codesheet['D']:
+            if bees_code.value != None and bees_code.value != 'Bees':
+                bees_codes.append(str(int(bees_code.value)))
+    
+        for code in codes:
+            try:
+                bees[code].append(bees_codes[counter])
+                #new_andina[and_codes[counter]] = andina[code]
+            except:
+                pass
+            counter +=1
+
+        for key in bees.keys():
+            try:
+                type(bees[key][3])
+            except:
+                bees[key].append('')
+        return bees
+    
     # Método que añade las fechas a los artículos antes de actualizar los precios.
-    def anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima):
+    def anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr):
         for key in maxiconsumo.keys():
             maxiconsumo[key].append(self.codigo_fecha[key])
         for key in andina.keys():
@@ -252,33 +285,29 @@ class Lector:
             oscar_david[key].append(self.codigo_fecha[key])
         for key in serenisima.keys():
             serenisima[key].append(self.codigo_fecha[key])
+        for key in bees_alv.keys():
+            bees_alv[key].append(self.codigo_fecha[key])
+        for key in bees_sr.keys():
+            bees_sr[key].append(self.codigo_fecha[key])
         
-        return maxiconsumo, andina, oscar_david, serenisima
+        return maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr
     
-    def adaptar(self, maxiconsumo, andina, oscar_david, la_serenisima):
-        print('MAXICONSUMO: ')
-        for key in maxiconsumo.keys():
-            print(f'type: {type(maxiconsumo[key][4])}')
-            if '$' in maxiconsumo[key][4]:
-                print(f'{key}: {maxiconsumo[key][4][2:]}')
-        print('ANDINA: ')
-        for key in andina.keys():
-            print(f'type: {type(andina[key][4])}')
-            print(f'{key}: {andina[key][4]}')
-        print('OSCAR DAVID: ')
-        for key in oscar_david.keys():
-            print(f'type: {type(oscar_david[key][4])}')
-            print(f'{key}: {oscar_david[key][4]}')
-        print('LA SERENÍSIMA: ')
-        for key in la_serenisima.keys():
-            print(f'type: {type(la_serenisima[key][4])}')
-            print(f'{key}: {la_serenisima[key][4]}')
+    def adaptar(self, maxiconsumo={}, andina={}):
+        if maxiconsumo != {}:
+            for key in maxiconsumo.keys():
+                if '$' in maxiconsumo[key][4]:
+                    maxiconsumo[key][4] = maxiconsumo[key][4][2:]
+        if andina != {}:
+            for key in andina.keys():
+                if '$' in andina[key][4]:
+                    andina[key][4] = andina[key][4][2:]
 
-        return maxiconsumo, andina, oscar_david, la_serenisima
+        return maxiconsumo, andina
 
     # Método que actualiza los precios en un excel actualizado
-    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima):
+    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr):
         nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
+        maxiconsumo, andina = Lector.adaptar(self, maxiconsumo, andina)
         wb_act = Workbook()
         ws_act = wb_act[wb_act.sheetnames[0]]
         i = 1
@@ -290,7 +319,7 @@ class Lector:
         ws_act.cell(1, 6, 'Nuevo Precio')
         ws_act.cell(1, 7, 'Última fecha')
 
-        maxiconsumo, andina, oscar_david, serenisima = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima)
+        maxiconsumo, andina, oscar_david, serenisima = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr)
         for key in maxiconsumo.keys():
             ws_act.cell(i+1, 1, key)
             ws_act.cell(i+1, 2, maxiconsumo[key][0])
@@ -326,6 +355,24 @@ class Lector:
             ws_act.cell(i+1, 5, serenisima[key][3])
             ws_act.cell(i+1, 6, serenisima[key][4])
             ws_act.cell(i+1, 7, serenisima[key][5])
+            i+=1
+        for key in bees_alv.keys():
+            ws_act.cell(i+1, 1, key)
+            ws_act.cell(i+1, 2, bees_alv[key][0])
+            ws_act.cell(i+1, 3, bees_alv[key][1])
+            ws_act.cell(i+1, 4, bees_alv[key][2])
+            ws_act.cell(i+1, 5, bees_alv[key][3])
+            ws_act.cell(i+1, 6, bees_alv[key][4])
+            ws_act.cell(i+1, 7, bees_alv[key][5])
+            i+=1
+        for key in bees_sr.keys():
+            ws_act.cell(i+1, 1, key)
+            ws_act.cell(i+1, 2, bees_sr[key][0])
+            ws_act.cell(i+1, 3, bees_sr[key][1])
+            ws_act.cell(i+1, 4, bees_sr[key][2])
+            ws_act.cell(i+1, 5, bees_sr[key][3])
+            ws_act.cell(i+1, 6, bees_sr[key][4])
+            ws_act.cell(i+1, 7, bees_sr[key][5])
             i+=1
         wb_act.save('archivos/'+nombre_archivo)
 

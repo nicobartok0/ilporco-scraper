@@ -73,8 +73,26 @@ class Sesionador:
 
         return serenisima_sess_id
     
-
-
+    def sesionar_bees(self, user, pswd):
+        # El driver busca la página y espera 3 segundos
+        self.driver.get('https://mybees.com.ar')
+        time.sleep(3)
+        # Luego da click en "ingresa" y espera dos segundos
+        self.driver.find_element(by='xpath', value='//*[@id="guest_homepage_login_button"]').click()
+        time.sleep(2)
+        # Colocamos el nombre de usuario y contraseña y damos click en "continuar".
+        self.driver.find_element(by='xpath', value='//*[@id="signInName"]').send_keys(user)
+        self.driver.find_element(by='xpath', value='//*[@id="password"]').send_keys(pswd)
+        self.driver.find_element(by='xpath', value='//*[@id="continueNew"]').click()
+        
+        #Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "ajs_user_id"
+        cookies = self.driver.get_cookies()
+        for cookie in cookies:
+            if cookie['name'] == 'connect.sid':
+                bees1_id = cookie['value']
+            
+        return bees1_id
+    
 
         
         

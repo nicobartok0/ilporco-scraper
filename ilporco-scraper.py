@@ -46,16 +46,6 @@ search = PhotoImage(file='assets/search.png')
 search = search.subsample(25, 25)
 root.iconphoto(True, logo)
 
-# Obtenemos los directorios de los archivos dentro de la carpeta "archivos"
-listdirs = []
-dirs = os.listdir('archivos/')
-# Extraemos la extensión .xlsx
-for dir in dirs:
-    dir = dir[:-5]
-    listdirs.append(f'{os.getcwd()}\\{dir}')
-
-
-
 
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def boton():
@@ -194,9 +184,6 @@ def obtener_ruta():
     nombre = nombre[:-5]
     nombre_label.set(nombre)
 
-def vincular():
-    print(f'Datos: \nMaxiconsumo\n{operador.maxiconsumo} \nOscar David\n{operador.oscar_david} \nAndina\n {operador.andina}\nLa Serenísima\n {operador.la_serenisima}')
-    
 
 def info():
     os.system(f'start {os.getcwd()}\\assets\\Instructivo-Scraper.pdf')
@@ -221,14 +208,13 @@ ttk.Entry(frame, textvariable=andina_id_label).grid(column=1, row=2, pady=10)
 ttk.Entry(frame, textvariable=od_id_label).grid(column=1, row=3, pady=10)
 ttk.Entry(frame, textvariable=serenisima_id_label).grid(column=1, row=4, pady=10)
 entry_principal = ttk.Label(frame, textvariable=nombre_label)
-entry_principal.grid(column=1, row=5, pady=10)
-ttk.Button(frame, image=search, command=obtener_ruta).grid(column=2, row=5, pady=10)
+entry_principal.grid(column=2, row=5, pady=10, padx=10)
+ttk.Button(frame, image=search, command=obtener_ruta).grid(column=1, row=5, pady=10)
 
 # Creamos los botones con sus respectivos comandos (salir del programa y iniciar búsqueda)
 ttk.Button(frame, text='Obtener sesiones', command=ventana_sesiones).grid(column=1, row=0)
 ttk.Button(frame, text="Salir", command=root.destroy).grid(column=0, row=6)
 ttk.Button(frame, text='Iniciar Búsqueda de precios', command=boton).grid(column=1, row=6)
-ttk.Button(frame, text='Vincular datos con Sistema Principal', command=vincular).grid(column=1, row=7, pady=10)
 
 # Creamos el menú de opciones
 menubar = tk.Menu(root)
@@ -241,7 +227,7 @@ opciones_menu.add_command(label='Cargar credenciales', command=cargar_credencial
 opciones_menu.add_command(label='Editar credenciales', command=ventana_editar_credenciales)
 opciones_menu.add_command(label='Modificar tabla intermedia', command=ventana_mod_tabla_intermedia)
 opciones_menu.add_command(label='Abrir tabla intermedia', command=abrir_tabla_intermedia)
-opciones_menu.add_command(label='Obtener archivo desde ruta alterna', command=obtener_ruta)
+opciones_menu.add_command(label='Obtener archivo...', command=obtener_ruta)
 opciones_menu.add_command(label='Información y ayuda', command=info)
 opciones_menu.add_separator()
 opciones_menu.add_command(label='Salir', command=root.destroy)
