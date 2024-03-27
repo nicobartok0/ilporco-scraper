@@ -88,8 +88,7 @@ class Lector:
         self.andina = {}
         self.oscar_david = {}
         self.serenisima = {}
-        self.bees_alv = {}
-        self.bees_sr = {}
+        self.bees = {}
         self.nodata = {}
         for key in self.datos.keys():
             if 'MAXICONSUMO' in self.datos[key][2]:
@@ -100,14 +99,12 @@ class Lector:
                 self.oscar_david[key] = self.datos[key]
             elif 'SERENISIMA' in self.datos[key][2]:
                 self.serenisima[key] = self.datos[key]
-            elif 'SANTO GUILIANO' in self.datos[key][2]:
-                self.bees_alv[key] = self.datos[key]
-            elif 'JOSE ESTABAN PANELLA S.A.' in self.datos[key][2]:
-                self.bees_sr[key] = self.datos[key]
+            elif 'SANTO GUILIANO' in self.datos[key][2] or 'JOSE ESTABAN PANELLA' in self.datos[key][2]:
+                self.bees[key] = self.datos[key]
             else:
                 self.nodata[key] = self.datos[key]
 
-        return self.maxiconsumo, self.andina, self.oscar_david, self.serenisima, self.bees_alv, self.bees_sr, self.nodata
+        return self.maxiconsumo, self.andina, self.oscar_david, self.serenisima, self.bees, self.nodata
 
     # Método que le asigna a cada artículo de Andina un código interno de la tabla intermedia
     def intercode_andina(self, andina):
@@ -276,7 +273,7 @@ class Lector:
         return bees
     
     # Método que añade las fechas a los artículos antes de actualizar los precios.
-    def anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr):
+    def anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees):
         for key in maxiconsumo.keys():
             maxiconsumo[key].append(self.codigo_fecha[key])
         for key in andina.keys():
@@ -285,12 +282,10 @@ class Lector:
             oscar_david[key].append(self.codigo_fecha[key])
         for key in serenisima.keys():
             serenisima[key].append(self.codigo_fecha[key])
-        for key in bees_alv.keys():
-            bees_alv[key].append(self.codigo_fecha[key])
-        for key in bees_sr.keys():
-            bees_sr[key].append(self.codigo_fecha[key])
+        for key in bees.keys():
+            bees[key].append(self.codigo_fecha[key])
         
-        return maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr
+        return maxiconsumo, andina, oscar_david, serenisima, bees
     
     def adaptar(self, maxiconsumo={}, andina={}):
         if maxiconsumo != {}:
@@ -305,7 +300,7 @@ class Lector:
         return maxiconsumo, andina
 
     # Método que actualiza los precios en un excel actualizado
-    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr):
+    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima, bees):
         nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
         maxiconsumo, andina = Lector.adaptar(self, maxiconsumo, andina)
         wb_act = Workbook()
@@ -319,7 +314,7 @@ class Lector:
         ws_act.cell(1, 6, 'Nuevo Precio')
         ws_act.cell(1, 7, 'Última fecha')
 
-        maxiconsumo, andina, oscar_david, serenisima = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees_alv, bees_sr)
+        maxiconsumo, andina, oscar_david, serenisima, bees = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees)
         for key in maxiconsumo.keys():
             ws_act.cell(i+1, 1, key)
             ws_act.cell(i+1, 2, maxiconsumo[key][0])
@@ -356,25 +351,15 @@ class Lector:
             ws_act.cell(i+1, 6, serenisima[key][4])
             ws_act.cell(i+1, 7, serenisima[key][5])
             i+=1
-        for key in bees_alv.keys():
+        for key in bees.keys():
             ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, bees_alv[key][0])
-            ws_act.cell(i+1, 3, bees_alv[key][1])
-            ws_act.cell(i+1, 4, bees_alv[key][2])
-            ws_act.cell(i+1, 5, bees_alv[key][3])
-            ws_act.cell(i+1, 6, bees_alv[key][4])
-            ws_act.cell(i+1, 7, bees_alv[key][5])
+            ws_act.cell(i+1, 2, bees[key][0])
+            ws_act.cell(i+1, 3, bees[key][1])
+            ws_act.cell(i+1, 4, bees[key][2])
+            ws_act.cell(i+1, 5, bees[key][3])
+            ws_act.cell(i+1, 6, bees[key][4])
+            ws_act.cell(i+1, 7, bees[key][5])
             i+=1
-        for key in bees_sr.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, bees_sr[key][0])
-            ws_act.cell(i+1, 3, bees_sr[key][1])
-            ws_act.cell(i+1, 4, bees_sr[key][2])
-            ws_act.cell(i+1, 5, bees_sr[key][3])
-            ws_act.cell(i+1, 6, bees_sr[key][4])
-            ws_act.cell(i+1, 7, bees_sr[key][5])
-            i+=1
-        wb_act.save('archivos/'+nombre_archivo)
 
 class Administrador_de_credenciales:
     def __init__(self):
@@ -386,29 +371,23 @@ class Administrador_de_credenciales:
         maxi_pswd = ''
         sere_user = '' 
         sere_pswd = ''
-        bees_alv_user = ''
-        bees_alv_pswd = ''
-        bees_sr_user = ''
-        bees_sr_pswd = ''
+        bees_user = ''
+        bees_pswd = ''
         maxi_user = self.ws_credenciales['B2'].value
         maxi_pswd = cryptocode.decrypt(self.ws_credenciales['C2'].value, 'ilporco')
         sere_user = self.ws_credenciales['B3'].value
         sere_pswd = cryptocode.decrypt(self.ws_credenciales['C3'].value, 'ilporco')
-        bees_alv_user = self.ws_credenciales['B4'].value
-        bees_alv_pswd = cryptocode.decrypt(self.ws_credenciales['C4'].value, 'ilporco')
-        bees_sr_user = self.ws_credenciales['B5'].value
-        bees_sr_pswd = cryptocode.decrypt(self.ws_credenciales['C5'].value, 'ilporco')
-        return maxi_user, maxi_pswd, sere_user, sere_pswd, bees_alv_user, bees_alv_pswd, bees_sr_user, bees_sr_pswd
+        bees_user = self.ws_credenciales['B4'].value
+        bees_pswd = cryptocode.decrypt(self.ws_credenciales['C4'].value, 'ilporco')
+        return maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd
 
-    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd, bees_alv_user, bees_alv_pswd, bees_sr_user, bees_sr_pswd):
+    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd):
         self.ws_credenciales['B2'] = maxi_user
         self.ws_credenciales['C2'] = cryptocode.encrypt(maxi_pswd, 'ilporco')
         self.ws_credenciales['B3'] = sere_user
         self.ws_credenciales['C3'] = cryptocode.encrypt(sere_pswd, 'ilporco')
-        self.ws_credenciales['B4'] = bees_alv_user
-        self.ws_credenciales['C4'] = cryptocode.encrypt(bees_alv_pswd, 'ilporco')
-        self.ws_credenciales['B5'] = bees_sr_user
-        self.ws_credenciales['C5'] = cryptocode.encrypt(bees_sr_pswd, 'ilporco')
+        self.ws_credenciales['B4'] = bees_user
+        self.ws_credenciales['C4'] = cryptocode.encrypt(bees_pswd, 'ilporco')
         self.wb_credenciales.save('assets/credenciales.xlsx')
 
 class Administrador_Intermedia:
