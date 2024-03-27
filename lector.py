@@ -386,17 +386,29 @@ class Administrador_de_credenciales:
         maxi_pswd = ''
         sere_user = '' 
         sere_pswd = ''
-        maxi_user = self.ws_credenciales['B1'].value
-        maxi_pswd = cryptocode.decrypt(self.ws_credenciales['B2'].value, 'ilporco')
-        sere_user = self.ws_credenciales['D1'].value
-        sere_pswd = cryptocode.decrypt(self.ws_credenciales['D2'].value, 'ilporco')
-        return maxi_user, maxi_pswd, sere_user, sere_pswd
+        bees_alv_user = ''
+        bees_alv_pswd = ''
+        bees_sr_user = ''
+        bees_sr_pswd = ''
+        maxi_user = self.ws_credenciales['B2'].value
+        maxi_pswd = cryptocode.decrypt(self.ws_credenciales['C2'].value, 'ilporco')
+        sere_user = self.ws_credenciales['B3'].value
+        sere_pswd = cryptocode.decrypt(self.ws_credenciales['C3'].value, 'ilporco')
+        bees_alv_user = self.ws_credenciales['B4'].value
+        bees_alv_pswd = cryptocode.decrypt(self.ws_credenciales['C4'].value, 'ilporco')
+        bees_sr_user = self.ws_credenciales['B5'].value
+        bees_sr_pswd = cryptocode.decrypt(self.ws_credenciales['C5'].value, 'ilporco')
+        return maxi_user, maxi_pswd, sere_user, sere_pswd, bees_alv_user, bees_alv_pswd, bees_sr_user, bees_sr_pswd
 
-    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd):
-        self.ws_credenciales['B1'] = maxi_user
-        self.ws_credenciales['B2'] = cryptocode.encrypt(maxi_pswd, 'ilporco')
-        self.ws_credenciales['D1'] = sere_user
-        self.ws_credenciales['D2'] = cryptocode.encrypt(sere_pswd, 'ilporco')
+    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd, bees_alv_user, bees_alv_pswd, bees_sr_user, bees_sr_pswd):
+        self.ws_credenciales['B2'] = maxi_user
+        self.ws_credenciales['C2'] = cryptocode.encrypt(maxi_pswd, 'ilporco')
+        self.ws_credenciales['B3'] = sere_user
+        self.ws_credenciales['C3'] = cryptocode.encrypt(sere_pswd, 'ilporco')
+        self.ws_credenciales['B4'] = bees_alv_user
+        self.ws_credenciales['C4'] = cryptocode.encrypt(bees_alv_pswd, 'ilporco')
+        self.ws_credenciales['B5'] = bees_sr_user
+        self.ws_credenciales['C5'] = cryptocode.encrypt(bees_sr_pswd, 'ilporco')
         self.wb_credenciales.save('assets/credenciales.xlsx')
 
 class Administrador_Intermedia:

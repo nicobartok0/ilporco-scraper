@@ -35,10 +35,10 @@ class Sesionador:
         cookies = self.driver.get_cookies()
         for cookie in cookies:
             if cookie['name'] == 'PHPSESSID':
-                maxiconsumo_sess_id = cookie['value']
+                self.maxiconsumo_sess_id = cookie['value']
         
         # Devolvemos el id de sesión.
-        return maxiconsumo_sess_id
+        return self.maxiconsumo_sess_id
     
     def sesionar_andina(self):
         # El driver busca la página y espera 3 segundos.
@@ -49,10 +49,10 @@ class Sesionador:
         cookies = self.driver.get_cookies()
         for cookie in cookies:
             if cookie['name'] == 'PHPSESSID':
-                andina_sess_id = cookie['value']
+                self.andina_sess_id = cookie['value']
 
         # Devolvemos el id de sesión.
-        return andina_sess_id
+        return self.andina_sess_id
 
     def sesionar_serenisima(self, user, pswd):
         # El driver busca la página y espera 3 segundos
@@ -69,29 +69,27 @@ class Sesionador:
         cookies = self.driver.get_cookies()
         for cookie in cookies:
             if cookie['name'] == 'session_id':
-                serenisima_sess_id = cookie['value']
+                self.serenisima_sess_id = cookie['value']
 
-        return serenisima_sess_id
+        return self.serenisima_sess_id
     
     def sesionar_bees(self, user, pswd):
         # El driver busca la página y espera 3 segundos
+        self.driver.delete_network_conditions()
         self.driver.get('https://mybees.com.ar')
+        self.driver.fullscreen_window()
+        time.sleep(5)
+        self.driver.find_element(by='xpath', value='//*[@id="guest_homepage_login_button"]/span').click()
         time.sleep(3)
-        # Luego da click en "ingresa" y espera dos segundos
-        self.driver.find_element(by='xpath', value='//*[@id="guest_homepage_login_button"]').click()
-        time.sleep(2)
         # Colocamos el nombre de usuario y contraseña y damos click en "continuar".
         self.driver.find_element(by='xpath', value='//*[@id="signInName"]').send_keys(user)
         self.driver.find_element(by='xpath', value='//*[@id="password"]').send_keys(pswd)
         self.driver.find_element(by='xpath', value='//*[@id="continueNew"]').click()
-        
-        #Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "ajs_user_id"
+        time.sleep(3)
+        #Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "connect.sid"
         cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            if cookie['name'] == 'connect.sid':
-                bees1_id = cookie['value']
-            
-        return bees1_id
+        self.bees_id = cookies[4]['value']    
+        return self.bees_id
     
 
         

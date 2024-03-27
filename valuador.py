@@ -506,37 +506,50 @@ class Valuador_Bees:
         self.url = 'https://mybees.com.ar/api/blocks'
         self.precios = []
 
-    def get_prices(self, bees):
+    def get_prices(self, bees, progress, contador, currentarticle):
         sku_list = []
+        self.contador = contador
+        article_names = {}
+
         for key in bees.keys():
             sku_list.append(bees[key][3])
+            article_names[bees[key][3]] = bees[key][0]
 
         for sku in sku_list:
-            # Añadimos el sku al parámetro de la consulta
-            self.params['term'] = sku
-            self.params['termRaw'] = sku
             
-            # Hacemos la consulta y obtenemos el JSON de respuesta
-            response = requests.get(self.url, params=self.params, cookies=self.cookies, headers=self.headers)
-            res = response.json()
+            if sku != '':
+                currentarticle.set(article_names[sku])
+                self.contador +=1
+                # Añadimos el sku al parámetro de la consulta
+                self.params['term'] = sku
+                self.params['termRaw'] = sku
+                
+                # Hacemos la consulta y obtenemos el JSON de respuesta
+                response = requests.get(self.url, params=self.params, cookies=self.cookies, headers=self.headers)
+                res = response.json()
 
-            # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
-            # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
-            products_dict = {}
-            current_skus = []
-            for element in res['blocks'][5]['meta']['data']['products']:
-                products_dict[element['sku']] = element['price']
-                current_skus.append(element['sku'])
+                # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
+                # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
+                products_dict = {}
+                current_skus = []
+                for element in res['blocks'][5]['meta']['data']['products']:
+                    products_dict[element['sku']] = element['price']
+                    current_skus.append(element['sku'])
 
-            
+                
 
-            # Comparamos SKUs si existe el SKU que buscamos en la lista de SKUs y guardamos el precio que corresponde si es el caso.
-            if sku in current_skus:    
-                for key in products_dict:
-                    if key == sku:
-                        self.precios.append(products_dict[key])
+                # Comparamos SKUs si existe el SKU que buscamos en la lista de SKUs y guardamos el precio que corresponde si es el caso.
+                if sku in current_skus:    
+                    for key in products_dict:
+                        if key == sku:
+                            self.precios.append(products_dict[key])
+                            progress.set(self.contador)
+                else:
+                    self.precios.append('Sin precio')
+                    progress.set(self.contador)
             else:
                 self.precios.append('Sin precio')
+                progress.set(self.contador)
 
         # Ahora apendamos cada precio a su respectivo artículo de bees
         count = 0
