@@ -75,7 +75,7 @@ class Sesionador:
     
     def sesionar_bees(self, user, pswd):
         # El driver busca la página y espera 3 segundos
-        self.driver.delete_network_conditions()
+        #self.driver.delete_network_conditions()
         self.driver.get('https://mybees.com.ar')
         self.driver.fullscreen_window()
         time.sleep(5)

@@ -520,7 +520,6 @@ class Valuador_Bees:
             if sku != '':
                 currentarticle.set(article_names[sku])
                 self.contador +=1
-                print(self.contador)
                 # Añadimos el sku al parámetro de la consulta
                 self.params['term'] = sku
                 self.params['termRaw'] = sku
@@ -528,25 +527,30 @@ class Valuador_Bees:
                 # Hacemos la consulta y obtenemos el JSON de respuesta
                 response = requests.get(self.url, params=self.params, cookies=self.cookies, headers=self.headers)
                 res = response.json()
-                
+            
+                if res != {}:
+                    # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
+                    # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
+                    products_dict = {}
+                    current_skus = []
+                    for element in res['blocks'][5]['meta']['data']['products']:
+                        products_dict[element['sku']] = element['price']
+                        current_skus.append(element['sku'])
+                        a = element['sku']
+                        print(f'{self.contador}: {a} búsqueda: {sku}')
+                    
 
-                # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
-                # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
-                products_dict = {}
-                current_skus = []
-                for element in res['blocks'][5]['meta']['data']['products']:
-                    products_dict[element['sku']] = element['price']
-                    current_skus.append(element['sku'])
-
-                
-
-                # Comparamos SKUs si existe el SKU que buscamos en la lista de SKUs y guardamos el precio que corresponde si es el caso.
-                if sku in current_skus:    
-                    for key in products_dict:
-                        if key == sku:
-                            self.precios.append(products_dict[key])
-                            progress.set(self.contador)
+                    # Comparamos SKUs si existe el SKU que buscamos en la lista de SKUs y guardamos el precio que corresponde si es el caso.
+                    if sku in current_skus:  
+                        for key in products_dict:
+                            if key == sku:
+                                self.precios.append(products_dict[key])
+                                progress.set(self.contador)
+                    else:
+                        self.precios.append('Sin precio')
+                        progress.set(self.contador)
                 else:
+                    print('VACÍO !!!')
                     self.precios.append('Sin precio')
                     progress.set(self.contador)
             else:

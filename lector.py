@@ -1,5 +1,6 @@
 from openpyxl import load_workbook, Workbook
 import cryptocode
+import os
 
 # Clase del scaner del libro de excel. El libro debe estar en el mismo
 # directorio que el módulo.
@@ -8,7 +9,7 @@ class Lector:
     # Constructor de "Lector". Necesita el nombre del archivo excel del que sacar los datos.
     def __init__(self, name, ruta):
         self.name = name
-        self.wb = load_workbook(ruta)
+        self.wb = load_workbook(ruta, data_only=True)
         self.ws = self.wb['Hoja1']
         self.intermedia = load_workbook('assets/tabla-intermedia.xlsx')
         self.andina_codesheet = self.intermedia['Andina']
@@ -255,8 +256,9 @@ class Lector:
                 codes.append(str(int(code.value)))
         for bees_code in self.bees_codesheet['D']:
             if bees_code.value != None and bees_code.value != 'Bees':
-                bees_codes.append(str(int(bees_code.value)))
-    
+                bees_codes.append(str(bees_code.internal_value))
+        for bee in bees_codes:
+            print(bee)
         for code in codes:
             try:
                 bees[code].append(bees_codes[counter])
@@ -360,6 +362,7 @@ class Lector:
             ws_act.cell(i+1, 6, bees[key][4])
             ws_act.cell(i+1, 7, bees[key][5])
             i+=1
+        wb_act.save(f'{os.getcwd()}/archivos/{nombre_archivo}')
 
 class Administrador_de_credenciales:
     def __init__(self):

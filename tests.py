@@ -1,6 +1,8 @@
-from sesionador import Sesionador
+from lector import Lector
 
-sesionador = Sesionador()
 
-sesionador.sesionar_bees('2625404916', 'ilporcoalvear2022')
-print(sesionador.bees_id)
+scanner = Lector('pruebas.xlsx', '/home/nicobartok0/Escritorio/Ilporco-scraper-data/BEESPLANILLA.xlsx')
+
+datos = scanner.obtener_datos()
+datos = scanner.intercode_bees(datos)
+

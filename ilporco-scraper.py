@@ -242,7 +242,7 @@ ttk.Entry(frame, textvariable=serenisima_id_label).grid(column=1, row=4, pady=10
 ttk.Entry(frame, textvariable=bees_id_label).grid(column=1, row=5, pady=10)
 #ttk.Entry(frame, textvariable=bees_sr_id_label).grid(column=1, row=6, pady=10)
 entry_principal = ttk.Label(frame, textvariable=nombre_label)
-entry_principal.grid(column=2, row=5, pady=10, padx=10)
+entry_principal.grid(column=2, row=7, pady=10, padx=10)
 ttk.Button(frame, image=search, command=obtener_ruta).grid(column=1, row=7, pady=10)
 
 # Creamos los botones con sus respectivos comandos (salir del programa y iniciar búsqueda)
