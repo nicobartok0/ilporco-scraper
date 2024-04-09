@@ -161,8 +161,8 @@ def ventana_editar_credenciales():
     ttk.Entry(ventana_credenciales, textvariable=new_sp, show='*').grid(column=2, row=4)
     ttk.Entry(ventana_credenciales, textvariable=new_bau).grid(column=2, row=5)
     ttk.Entry(ventana_credenciales, textvariable=new_bap, show='*').grid(column=2, row=6)
-    ttk.Entry(ventana_credenciales, textvariable=new_bsu).grid(column=2, row=7)
-    ttk.Entry(ventana_credenciales, textvariable=new_bsp, show='*').grid(column=2, row=8)
+    #ttk.Entry(ventana_credenciales, textvariable=new_bsu).grid(column=2, row=7)
+    #ttk.Entry(ventana_credenciales, textvariable=new_bsp, show='*').grid(column=2, row=8)
     ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales)).grid(column=2, row=9, pady=10)
     
 

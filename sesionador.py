@@ -88,10 +88,14 @@ class Sesionador:
         time.sleep(3)
         #Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "connect.sid"
         cookies = self.driver.get_cookies()
+        result_cookies = {}
         for cookie in cookies:
-            print(cookie)
-        self.bees_id = cookies[4]['value']    
-        return self.bees_id
+            result_cookies[cookie['name']] = cookie['value']
+            #if cookie['name'] == 'connect.sid':
+            #    self.bees_id = cookie['value']  
+        for key in result_cookies.keys():
+            print(f'{key}: {result_cookies[key]}')
+        return result_cookies
     
 
         

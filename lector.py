@@ -257,8 +257,6 @@ class Lector:
         for bees_code in self.bees_codesheet['D']:
             if bees_code.value != None and bees_code.value != 'Bees':
                 bees_codes.append(str(bees_code.internal_value))
-        for bee in bees_codes:
-            print(bee)
         for code in codes:
             try:
                 bees[code].append(bees_codes[counter])

@@ -527,17 +527,21 @@ class Valuador_Bees:
                 # Hacemos la consulta y obtenemos el JSON de respuesta
                 response = requests.get(self.url, params=self.params, cookies=self.cookies, headers=self.headers)
                 res = response.json()
-            
+                for element in res['blocks']:
+                    print(f'{element}\n\n')
                 if res != {}:
                     # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
                     # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
                     products_dict = {}
                     current_skus = []
+                    
+
+
                     for element in res['blocks'][5]['meta']['data']['products']:
                         products_dict[element['sku']] = element['price']
                         current_skus.append(element['sku'])
                         a = element['sku']
-                        print(f'{self.contador}: {a} búsqueda: {sku}')
+                    
                     
 
                     # Comparamos SKUs si existe el SKU que buscamos en la lista de SKUs y guardamos el precio que corresponde si es el caso.
