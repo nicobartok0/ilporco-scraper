@@ -7,7 +7,7 @@ class Sesion:
     def __init__(self, username, password) -> None:
         self.proveedor = ''
         self.username = username
-        self.password = cryptocode.decrypt(password, 'ilporco')
+        self.password = password
         self.url = ''
         self.sess_id = ''
         self.cookies = {}
@@ -76,7 +76,7 @@ class Sesion_Maxiconsumo(Sesion):
         time.sleep(1)
         # Luego envía a los campos de "email" el correo electrónico enviado al método y en "pswd" la contraseña.
         self.driver.find_element(by='xpath', value='//*[@id="email"]').send_keys(self.username)
-        self.driver.find_element(by='xpath', value='//*[@id="pass"]').send_keys(self.password)
+        self.driver.find_element(by='xpath', value='//*[@id="pass"]').send_keys(cryptocode.decrypt(self.password, 'ilporco'))
         # El driver hace click en el botón de envío de credenciales.
         self.driver.find_element(by='xpath', value='//*[@id="send2"]/span').click()
         time.sleep(3)
@@ -239,7 +239,7 @@ class Sesion_La_Serenisima(Sesion):
         time.sleep(3)
         # Luego envía a los campos de "email" el correo electrónico enviado al método y en "pswd" la contraseña.
         self.driver.find_element(by='xpath', value='//*[@id="login"]').send_keys(self.username)
-        self.driver.find_element(by='xpath', value='//*[@id="password-login"]').send_keys(self.password)
+        self.driver.find_element(by='xpath', value='//*[@id="password-login"]').send_keys(cryptocode.decrypt(self.password, 'ilporco'))
         # El driver hace click en el botón de envío de credenciales.
         self.driver.find_element(by='xpath', value='//*[@id="dan_login_form_submit_id"]').click()
         time.sleep(3)
@@ -320,7 +320,7 @@ class Sesion_Bees(Sesion):
         time.sleep(3)
         # Colocamos el nombre de usuario y contraseña y damos click en "continuar".
         self.driver.find_element(by='xpath', value='//*[@id="signInName"]').send_keys(self.username)
-        self.driver.find_element(by='xpath', value='//*[@id="password"]').send_keys(self.password)
+        self.driver.find_element(by='xpath', value='//*[@id="password"]').send_keys(cryptocode.decrypt(self.password, 'ilporco'))
         self.driver.find_element(by='xpath', value='//*[@id="continueNew"]').click()
         time.sleep(3)
         #Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "connect.sid"

@@ -2,6 +2,7 @@ from openpyxl import load_workbook, Workbook
 import cryptocode
 import os
 from articulo import Articulo
+from proveedor import Proveedor
 
 # Clase del scaner del libro de excel. El libro debe estar en el mismo
 # directorio que el módulo.
@@ -20,9 +21,18 @@ class Lector:
         self.sku_list = []
         self.name_list = []
         self.prov_list = []
+        self.providers = []
         self.code_list = []
         self.date_list = []
         self.datos = {}
+    
+    def obtener_proveedores(self):
+        for prov in self.prov_list:
+            if ',' not in prov:
+                if prov not in self.providers:
+                    self.providers.append(prov)
+
+        return self.providers
 
     # Método que toma los SKU's de la primer fila del excel.
     def obtener_skus(self):
@@ -76,9 +86,10 @@ class Lector:
             articulo = Articulo()
             articulo.nombre = self.name_list[code]
             articulo.sku = self.sku_list[code]
-            articulo.proveedor = self.prov_list[code]
             articulo.fecha = self.date_list[code]
-            articulo.codigo = self.code_list[code]
+            articulo.codigo = self.code_list[code] 
+            articulo.proveedor_nombre = self.prov_list[code]
+
             articulos.append(articulo)
         
         return articulos
@@ -102,7 +113,7 @@ class Lector:
             if row[3].value != 'Bees':
                 self.bees_codes[str(int(row[1].value))] = str(int(row[3].value))
 
-        print(self.and_codes)
+        
         for articulo in articulos:
             if 'DISTRIBUIDORA ANDINA' in articulo.proveedor or 'ANDINA SRL' in articulo.proveedor:
                 try:

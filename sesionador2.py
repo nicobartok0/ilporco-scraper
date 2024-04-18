@@ -2,6 +2,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import sys, os
+from proveedor import Proveedor
 from sesion import Sesion_Andina, Sesion_Bees, Sesion_La_Serenisima, Sesion_Maxiconsumo, Sesion_Oscar_David
 
 
@@ -23,16 +24,33 @@ class Sesionador:
             if ',' not in proveedor.nombre:    
                 if 'MAXICONSUMO' in proveedor.nombre:
                     sesion = Sesion_Maxiconsumo(proveedor.username, proveedor.password)
-                elif 'JOSE ESTEBAN PANELLA' in proveedor.nombre or 'SANTO GUILIANO' in proveedor.nombre:
+                elif 'BEES' in proveedor.nombre:
                     sesion = Sesion_Bees(proveedor.username, proveedor.password)
-                elif 'DISTRIBUIDORA ANDINA' in proveedor.nombre or 'ANDINA SRL' in proveedor.nombre:
+                elif 'ANDINA' in proveedor.nombre:
                     sesion = Sesion_Andina(proveedor.username, proveedor.password)
                 elif 'LA SERENISIMA' in proveedor.nombre:
                     sesion = Sesion_La_Serenisima(proveedor.username, proveedor.password)
                 else:
                     sesion = Sesion_Oscar_David()
 
-                self.sesiones[proveedor.proveedor] = sesion
-            
-        return self.sesiones
+                self.sesiones[proveedor.nombre] = sesion
                     
+    def crear_sesion_manual(self, proveedor:Proveedor, sess_id):
+        if 'MAXICONSUMO' in proveedor.nombre:
+            sesion = Sesion_Maxiconsumo(proveedor.username, proveedor.password)
+        elif 'BEES' in proveedor.nombre:
+            sesion = Sesion_Bees(proveedor.username, proveedor.password)
+        elif 'ANDINA' in proveedor.nombre:
+            sesion = Sesion_Andina(proveedor.username, proveedor.password)
+        elif 'LA SERENISIMA' in proveedor.nombre:
+            sesion = Sesion_La_Serenisima(proveedor.username, proveedor.password)
+        else:
+            sesion = Sesion_Oscar_David()
+
+        sesion.sess_id = sess_id
+        self.sesiones[proveedor.nombre] = sesion
+
+    def abrir_sesiones(self):
+        for sesion in self.sesiones.values():
+            print(f'ABRIENDO SESIÓN DE {sesion.proveedor}')
+            sesion.abrir_sesion(self.driver)
