@@ -27,11 +27,16 @@ class Lector:
         self.datos = {}
     
     def obtener_proveedores(self):
+        self.obtener_proveedor()
         for prov in self.prov_list:
             if ',' not in prov:
                 if prov not in self.providers:
                     self.providers.append(prov)
-
+            else:
+                elements = prov.split(',')
+                for element in elements:
+                    if element not in self.providers:
+                        self.providers.append(element)
         return self.providers
 
     # Método que toma los SKU's de la primer fila del excel.
@@ -76,22 +81,27 @@ class Lector:
     # Método que toma los datos utilizando los métodos anteriores
     def obtener_datos(self):
         articulos = []
-        Lector.obtener_skus(self)
-        Lector.obtener_codigo(self)
-        Lector.obtener_nombres(self)
-        Lector.obtener_proveedor(self)
-        Lector.obtener_fechas(self)
+        self.obtener_skus()
+        self.obtener_codigo()
+        self.obtener_nombres()
+        self.obtener_proveedor()
+        self.obtener_fechas()
         self.codigo_fecha = {}
         for code in range(len(self.code_list)):
-            articulo = Articulo()
-            articulo.nombre = self.name_list[code]
-            articulo.sku = self.sku_list[code]
-            articulo.fecha = self.date_list[code]
-            articulo.codigo = self.code_list[code] 
-            articulo.proveedor_nombre = self.prov_list[code]
-
+            articulo = {
+                'nombre': f'{self.name_list[code]}',
+                'SKU': f'{self.sku_list[code]}',
+                'fecha': f'{self.date_list[code]}',
+                'codigo': f'{self.code_list[code]}',
+                'proveedor': f'{self.prov_list[code]}',
+            }
+            if self.prov_list[code] == 'DISTRIBUIDORA ANDINA' or self.prov_list[code] == 'ANDINA SRL':
+                articulo['proveedor'] = 'ANDINA'
+            elif self.prov_list[code] == 'OSCAR DAVID MAYORISTA':
+                articulo['proveedor'] = 'OSCAR DAVID'
+            elif self.prov_list[code] == 'SANTO GIULIANO' or self.prov_list[code] == 'ESTEBAN PANELLA':
+                articulo['proveedor'] = 'BEES'
             articulos.append(articulo)
-        
         return articulos
 
     def intercode(self, articulos):
@@ -115,22 +125,22 @@ class Lector:
 
         
         for articulo in articulos:
-            if 'DISTRIBUIDORA ANDINA' in articulo.proveedor or 'ANDINA SRL' in articulo.proveedor:
+            if 'ANDINA' in articulo.proveedor.nombre:
                 try:
                     articulo.cod_externo = self.and_codes[articulo.codigo]
                 except:
                     pass
-            elif 'OSCAR DAVID MAYORISTA' in articulo.proveedor or 'MAXICONSUMO' in articulo.proveedor:
+            elif 'OSCAR DAVID' in articulo.proveedor.nombre:
                 try:
                     articulo.cod_externo = self.od_codes[articulo.codigo]
                 except:
                     pass
-            elif 'SERENISIMA' in articulo.proveedor:
+            elif 'SERENISIMA' in articulo.proveedor.nombre:
                 try:
                     articulo.cod_externo = self.ser_codes[articulo.codigo]
                 except:
                     pass
-            elif 'SANTO GUILIANO' in articulo.proveedor or 'JOSE ESTEBAN PANELLA' in articulo.proveedor:
+            elif 'SANTO GUILIANO' in articulo.proveedor.nombre or 'JOSE ESTEBAN PANELLA' in articulo.proveedor.nombre or 'BEES' in articulo.proveedor.nombre:
                 try:
                     articulo.cod_externo = self.bees_codes[articulo.codigo]
                 except:
@@ -141,9 +151,8 @@ class Lector:
     
 
     # Método que actualiza los precios en un excel actualizado
-    def actualizar_precios(self, maxiconsumo, andina, oscar_david, serenisima, bees):
+    def actualizar_precios(self, articulos):
         nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
-        maxiconsumo, andina = Lector.adaptar(self, maxiconsumo, andina)
         wb_act = Workbook()
         ws_act = wb_act[wb_act.sheetnames[0]]
         i = 1
@@ -155,52 +164,16 @@ class Lector:
         ws_act.cell(1, 6, 'Nuevo Precio')
         ws_act.cell(1, 7, 'Última fecha')
 
-        maxiconsumo, andina, oscar_david, serenisima, bees = Lector.anidar_fechas(self, maxiconsumo, andina, oscar_david, serenisima, bees)
-        for key in maxiconsumo.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, maxiconsumo[key][0])
-            ws_act.cell(i+1, 3, maxiconsumo[key][1])
-            ws_act.cell(i+1, 4, maxiconsumo[key][2])
-            ws_act.cell(i+1, 5, maxiconsumo[key][3])
-            ws_act.cell(i+1, 6, maxiconsumo[key][4])
-            ws_act.cell(i+1, 7, maxiconsumo[key][5])
+        for articulo in articulos:
+            ws_act.cell(i+1, 1, articulo.codigo)
+            ws_act.cell(i+1, 2, articulo.nombre)
+            ws_act.cell(i+1, 3, articulo.sku)
+            ws_act.cell(i+1, 4, articulo.proveedor.nombre)
+            ws_act.cell(i+1, 5, articulo.cod_externo)
+            ws_act.cell(i+1, 6, articulo.precio)
+            ws_act.cell(i+1, 7, articulo.fecha)
             i+=1
-        for key in andina.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, andina[key][0])
-            ws_act.cell(i+1, 3, andina[key][1])
-            ws_act.cell(i+1, 4, andina[key][2])
-            ws_act.cell(i+1, 5, andina[key][3])
-            ws_act.cell(i+1, 6, andina[key][4])
-            ws_act.cell(i+1, 7, andina[key][5])
-            i+=1
-        for key in oscar_david.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, oscar_david[key][0])
-            ws_act.cell(i+1, 3, oscar_david[key][1])
-            ws_act.cell(i+1, 4, oscar_david[key][2])
-            ws_act.cell(i+1, 5, oscar_david[key][3])
-            ws_act.cell(i+1, 6, oscar_david[key][4])
-            ws_act.cell(i+1, 7, oscar_david[key][5])
-            i+=1
-        for key in serenisima.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, serenisima[key][0])
-            ws_act.cell(i+1, 3, serenisima[key][1])
-            ws_act.cell(i+1, 4, serenisima[key][2])
-            ws_act.cell(i+1, 5, serenisima[key][3])
-            ws_act.cell(i+1, 6, serenisima[key][4])
-            ws_act.cell(i+1, 7, serenisima[key][5])
-            i+=1
-        for key in bees.keys():
-            ws_act.cell(i+1, 1, key)
-            ws_act.cell(i+1, 2, bees[key][0])
-            ws_act.cell(i+1, 3, bees[key][1])
-            ws_act.cell(i+1, 4, bees[key][2])
-            ws_act.cell(i+1, 5, bees[key][3])
-            ws_act.cell(i+1, 6, bees[key][4])
-            ws_act.cell(i+1, 7, bees[key][5])
-            i+=1
+        
         wb_act.save(f'{os.getcwd()}/archivos/{nombre_archivo}')
 
 class Administrador_de_credenciales:

@@ -19,8 +19,8 @@ class Sesionador:
         self.sesiones = {}
 
     # Definimos la función en la que buscaremos el id de sesión de Maxiconsumo
-    def crear_sesiones(self, proveedores:list):
-        for proveedor in proveedores:
+    def crear_sesiones(self, proveedores:dict):
+        for proveedor in proveedores.values():
             if ',' not in proveedor.nombre:    
                 if 'MAXICONSUMO' in proveedor.nombre:
                     sesion = Sesion_Maxiconsumo(proveedor.username, proveedor.password)
@@ -54,3 +54,4 @@ class Sesionador:
         for sesion in self.sesiones.values():
             print(f'ABRIENDO SESIÓN DE {sesion.proveedor}')
             sesion.abrir_sesion(self.driver)
+            #self.driver.close()

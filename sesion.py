@@ -86,9 +86,11 @@ class Sesion_Maxiconsumo(Sesion):
         for cookie in cookies:
             if cookie['name'] == 'PHPSESSID':
                 self.sess_id = cookie['value']
+                self.cookies['PHPSESSID'] = cookie['value']
+        
 
     def cargar_sess_id(self, sess_id):
-        return super().cargar_sess_id(sess_id)
+        self.cookies['PHPSESSID'] = sess_id
         
 
 class Sesion_Oscar_David(Sesion):
@@ -140,7 +142,7 @@ class Sesion_Oscar_David(Sesion):
         super().abrir_sesion(driver)
 
     def cargar_sess_id(self, sess_id):
-        return super().cargar_sess_id(sess_id)
+        self.cookies['PHPSESSID'] = sess_id
 
 
     
@@ -186,6 +188,7 @@ class Sesion_Andina(Sesion):
         for cookie in cookies:
             if cookie['name'] == 'PHPSESSID':
                 self.sess_id = cookie['value']
+                self.cookies['PHPSESSID'] = cookie['value']
     
     def cargar_sess_id(self, sess_id):
         return super().cargar_sess_id(sess_id)
@@ -249,6 +252,7 @@ class Sesion_La_Serenisima(Sesion):
         for cookie in cookies:
             if cookie['name'] == 'session_id':
                 self.sess_id = cookie['value']
+                self.cookies['session_id'] = cookie['value']
 
     def cargar_sess_id(self, sess_id):
         return super().cargar_sess_id(sess_id)
@@ -330,6 +334,7 @@ class Sesion_Bees(Sesion):
             result_cookies[cookie['name']] = cookie['value']
             if cookie['name'] == 'connect.sid':
                 self.sess_id = cookie['value']  
+                self.cookies['connect.sid'] = cookie['value']
 
         
     def cargar_sess_id(self, sess_id):
