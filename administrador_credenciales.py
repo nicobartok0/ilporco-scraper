@@ -20,7 +20,15 @@ class Administrador_de_credenciales:
         sere_pswd = cryptocode.decrypt(self.ws_credenciales['C3'].value, 'ilporco')
         bees_user = self.ws_credenciales['B4'].value
         bees_pswd = cryptocode.decrypt(self.ws_credenciales['C4'].value, 'ilporco')
-        return maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd
+
+        creds = {
+            'MAXICONSUMO': [maxi_user, maxi_pswd],
+            'ANDINA': ['', ''],
+            'OSCAR DAVID': ['', ''],
+            'LA SERENISIMA': [sere_user, sere_pswd],
+            'BEES': [bees_user, bees_pswd]
+        }
+        return creds
 
     def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd):
         self.ws_credenciales['B2'] = maxi_user

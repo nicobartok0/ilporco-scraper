@@ -9,11 +9,14 @@ import os
 from sesionador2 import Sesionador
 
 class Operador:
-    def __init__(self, name, ruta):
-        self.lector = Lector(name, ruta)
-        self.sesionador = Sesionador()
+    def __init__(self):
         self.proveedores = {}
         self.articulos = []
+        self.sesionador = Sesionador()
+
+    def cargar_componentes(self, name, ruta):
+        self.lector = Lector(name, ruta)
+        
 
     def crear_proveedores(self, credentials):
         nom_proveedores = self.lector.obtener_proveedores()
@@ -73,4 +76,6 @@ class Operador:
         self.valuador.obtener_precios()
         self.lector.actualizar_precios(self.articulos)
             
+    def abrir_sesion(self, proveedor, sess_id):
+        self.sesionador.crear_sesion_manual(proveedor, sess_id)
         

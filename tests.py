@@ -6,11 +6,12 @@ import sys, os
 import cryptocode
 from operador2 import Operador
 
-operador = Operador('andina-mini', 'C:\\Users\\nicob\\OneDrive\\Escritorio\\ilporco-scraper\\archivos\\andina-mini.xlsx')
+operador = Operador('serenisima', 'C:\\Users\\nicob\\OneDrive\\Escritorio\\ilporco-scraper\\archivos\\serenisima.xlsx')
 credentials = {
     'MAXICONSUMO': ['orlando.piccinini@gmail.com', cryptocode.encrypt('Pampa.64', 'ilporco')],
     'OSCAR DAVID': ['orlando.piccinini@gmail.com', cryptocode.encrypt('Pampa.64', 'ilporco')],
-    'ANDINA': ['','']
+    'ANDINA': ['',''],
+    'LA SERENISIMA': ['orlando.piccinini@gmail.com', cryptocode.encrypt('Orlando0223', 'ilporco')],
 }
 
 operador.inicializar(credentials=credentials)

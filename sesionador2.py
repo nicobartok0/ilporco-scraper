@@ -33,25 +33,28 @@ class Sesionador:
                 else:
                     sesion = Sesion_Oscar_David()
 
-                self.sesiones[proveedor.nombre] = sesion
+                if self.sesiones[proveedor.nombre] != sesion: 
+                    self.sesiones[proveedor.nombre] = sesion
                     
-    def crear_sesion_manual(self, proveedor:Proveedor, sess_id):
-        if 'MAXICONSUMO' in proveedor.nombre:
-            sesion = Sesion_Maxiconsumo(proveedor.username, proveedor.password)
-        elif 'BEES' in proveedor.nombre:
-            sesion = Sesion_Bees(proveedor.username, proveedor.password)
-        elif 'ANDINA' in proveedor.nombre:
-            sesion = Sesion_Andina(proveedor.username, proveedor.password)
-        elif 'LA SERENISIMA' in proveedor.nombre:
-            sesion = Sesion_La_Serenisima(proveedor.username, proveedor.password)
+    def crear_sesion_manual(self, proveedor:str, sess_id):
+        if 'MAXICONSUMO' in proveedor:
+            sesion = Sesion_Maxiconsumo(username='', password='')
+        elif 'BEES' in proveedor:
+            sesion = Sesion_Bees(username='', password='')
+        elif 'ANDINA' in proveedor:
+            sesion = Sesion_Andina(username='', password='')
+        elif 'LA SERENISIMA' in proveedor:
+            sesion = Sesion_La_Serenisima(username='', password='')
         else:
             sesion = Sesion_Oscar_David()
 
         sesion.sess_id = sess_id
-        self.sesiones[proveedor.nombre] = sesion
+        self.sesiones[proveedor] = sesion
 
     def abrir_sesiones(self):
         for sesion in self.sesiones.values():
             print(f'ABRIENDO SESIÓN DE {sesion.proveedor}')
             sesion.abrir_sesion(self.driver)
-            #self.driver.close()
+        self.driver.close()
+
+    

@@ -29,7 +29,6 @@ class Valuador:
                     
                 soup = BeautifulSoup(response.content, 'html.parser')
                 precios = soup.find_all('span', {'class': 'price'})
-                print(f'articulo {articulo.nombre}, sku: {articulo.sku}, precios: {precios}')
                 try:
                     precio = precios[1].text
                     articulo.precio = precio
@@ -110,8 +109,7 @@ class Valuador:
                     # Hacemos la consulta y obtenemos el JSON de respuesta
                     response = requests.get(sesion_actual.url, params=sesion_actual.params, cookies=sesion_actual.cookies, headers=sesion_actual.headers)
                     res = response.json()
-                    for element in res['blocks']:
-                        print(f'{element}\n\n')
+                    
                     if res != {}:
                         # Creamos un diccionario con TODOS los productos que devuelve la página, para luego comparar los SKUS con el SKU que buscamos.
                         # Tambien creamos una lista con todos los SKUs actuales de la página para comprobar si el SKU en cuestión fue encontrado
