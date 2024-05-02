@@ -65,17 +65,21 @@ class Operador:
             articulo.codigo = articulo_dict['codigo']
             self.articulos.append(articulo)
 
-    def inicializar(self, credentials):
+    def inicializar(self, credentials, progresswindow):
         self.crear_proveedores(credentials=credentials)
         self.crear_articulos()
+        progresswindow.event_generate("<<SetMaxArticles>>", when="tail")
         self.sesionador.crear_sesiones(self.proveedores)
         self.sesionador.abrir_sesiones()
         self.articulos = self.lector.intercode(self.articulos)
-        self.valuador = Valuador(self.sesionador.sesiones, self.articulos)
+        self.valuador = Valuador(self.sesionador.sesiones, self.articulos, progresswindow)
         print('Llegué :D')
         self.valuador.obtener_precios()
         self.lector.actualizar_precios(self.articulos)
+        progresswindow.event_generate("<<SearchFinished>>", when="tail")
             
-    def abrir_sesion(self, proveedor, sess_id):
+    def abrir_sesion(self, proveedor, sess_id, window):
         self.sesionador.crear_sesion_manual(proveedor, sess_id)
+        window.event_generate("<<SessionCreated>>", when='tail')
+        
         

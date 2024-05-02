@@ -4,14 +4,17 @@ from bs4 import BeautifulSoup
 
 
 class Valuador:
-    def __init__(self, sesiones:dict, articulos:list):
+    def __init__(self, sesiones:dict, articulos:list, progresswindow):
         self.sesiones = sesiones
         self.articulos = articulos
+        self.window = progresswindow
         
 
     def obtener_precios(self):
         for articulo in self.articulos:
+            self.window.event_generate("<<ArticleRefresh>>", when="tail")
             sesion_actual = self.sesiones[articulo.proveedor.nombre]
+            self.articulo = articulo
             
             # Acá van los algoritmos que debe hacer el programa en cada página para encontrar el precio del artículo
 
