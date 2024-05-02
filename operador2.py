@@ -71,6 +71,7 @@ class Operador:
         progresswindow.event_generate("<<SetMaxArticles>>", when="tail")
         self.sesionador.crear_sesiones(self.proveedores)
         self.sesionador.abrir_sesiones()
+        progresswindow.event_generate("<<SessionsOpened>>", when="tail")
         self.articulos = self.lector.intercode(self.articulos)
         self.valuador = Valuador(self.sesionador.sesiones, self.articulos, progresswindow)
         print('Llegué :D')

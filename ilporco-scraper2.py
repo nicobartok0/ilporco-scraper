@@ -45,6 +45,8 @@ new_bau = tk.StringVar()
 new_bap = tk.StringVar()
 new_bsu = tk.StringVar()
 new_bsp = tk.StringVar()
+progresswindow_title = tk.StringVar()
+progresswindow_title.set('Abriendo las sesiones correspondientes')
 ti_sku = tk.StringVar()
 ti_ilporco = tk.StringVar()
 ti_nombre = tk.StringVar()
@@ -83,6 +85,8 @@ def setmaxarticles(event, barra):
 def session_created(event, proveedor):
     button_provider[proveedor].config(image=ok)
 
+def sessions_opened(event):
+    progresswindow_title.set('Espere mientras se buscan los artículos')
 
 # Creamos la función que el botón de "Iniciar Búsqueda de precios" ejecutará
 def iniciar_busqueda_de_precios():
@@ -91,10 +95,11 @@ def iniciar_busqueda_de_precios():
     
     progresswindow.title('Progreso')
     progresswindow.geometry('420x100')
-    ttk.Label(progresswindow, text='Espere mientras se buscan los datos...').grid(column=0, row=0)
+    ttk.Label(progresswindow, textvariable=progresswindow_title).grid(column=0, row=0)
     progresswindow.bind('<<SearchFinished>>', lambda event: close_window(event, progresswindow))
     progresswindow.bind('<<ArticleRefresh>>', refresh_article)
     progresswindow.bind('<<SetMaxArticles>>', lambda event: setmaxarticles(event, barra))
+    progresswindow.bind('<<SessionsOpened>>', sessions_opened)
     nuevonombre= f'{str(nombre_label.get())}-ACTUALIZADO.xlsx'
     # Creamos un operador de precios y le damos el session id y el nombre del archivo excel
     global operador
