@@ -21,8 +21,10 @@ class Operador:
     def crear_proveedores(self, credentials):
         nom_proveedores = self.lector.obtener_proveedores()
         for nombre in nom_proveedores:
+        
             if nombre == 'MAXICONSUMO':
                 proveedor = Proveedor(nombre='MAXICONSUMO',usuario=credentials['MAXICONSUMO'][0], password=credentials['MAXICONSUMO'][1])
+                print(f'USUARIO Y PASSWORD: {proveedor.nombre, proveedor.username, proveedor.password}')
                 dist = 'MAXICONSUMO'
             elif 'OSCAR DAVID' in nombre:
                 proveedor = Proveedor(nombre='OSCAR DAVID',usuario=credentials['OSCAR DAVID'][0], password=credentials['OSCAR DAVID'][1])
@@ -78,9 +80,12 @@ class Operador:
         self.valuador.obtener_precios()
         self.lector.actualizar_precios(self.articulos)
         progresswindow.event_generate("<<SearchFinished>>", when="tail")
+        self.lector.abrir_planilla_resultado()
             
     def abrir_sesion(self, proveedor, sess_id, window):
         self.sesionador.crear_sesion_manual(proveedor, sess_id)
         window.event_generate("<<SessionCreated>>", when='tail')
+
+
         
         

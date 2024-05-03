@@ -5,6 +5,7 @@ import time
 
 class Sesion:
     def __init__(self, username, password) -> None:
+        print(username, password)
         self.proveedor = ''
         self.username = username
         self.password = password

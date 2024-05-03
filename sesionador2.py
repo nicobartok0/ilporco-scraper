@@ -17,6 +17,7 @@ class Sesionador:
         sys.path.insert(0,chromedriver_path)
         if os.name != 'posix': 
             self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=options)
+            #self.driver = webdriver.Chrome(executable_path=chromedriver_path)
         else:
             self.driver = webdriver.Chrome()
         self.sesiones = {}

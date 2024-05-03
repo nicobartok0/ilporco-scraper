@@ -61,6 +61,8 @@ class Valuador:
                         for i in res:
                             if i['SUBTIT'] == codename:
                                 articulo.precio = i['PRBASE']
+                                
+                                
                     else:
                         articulo.precio = 'Sin Precio'
 

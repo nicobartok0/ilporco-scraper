@@ -1,8 +1,7 @@
 from openpyxl import load_workbook, Workbook
 import cryptocode
 import os
-from articulo import Articulo
-from proveedor import Proveedor
+
 
 # Clase del scaner del libro de excel. El libro debe estar en el mismo
 # directorio que el módulo.
@@ -152,7 +151,7 @@ class Lector:
 
     # Método que actualiza los precios en un excel actualizado
     def actualizar_precios(self, articulos):
-        nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
+        self.nombre_archivo = f'{self.name}-ACTUALIZADO.xlsx'
         wb_act = Workbook()
         ws_act = wb_act[wb_act.sheetnames[0]]
         i = 1
@@ -170,80 +169,15 @@ class Lector:
             ws_act.cell(i+1, 3, articulo.sku)
             ws_act.cell(i+1, 4, articulo.proveedor.nombre)
             ws_act.cell(i+1, 5, articulo.cod_externo)
-            ws_act.cell(i+1, 6, articulo.precio)
+            if articulo.precio != 'Sin precio' and articulo.proveedor.nombre == 'MAXICONSUMO':
+                ws_act.cell(i+1, 6, articulo.precio[2:])
+            else:
+                ws_act.cell(i+1, 6, articulo.precio)
             ws_act.cell(i+1, 7, articulo.fecha)
             i+=1
         
-        wb_act.save(f'{os.getcwd()}/archivos/{nombre_archivo}')
+        wb_act.save(f'{os.getcwd()}/archivos/{self.nombre_archivo}')
 
-class Administrador_de_credenciales:
-    def __init__(self):
-        self.wb_credenciales = load_workbook('assets/credenciales.xlsx')
-        self.ws_credenciales = self.wb_credenciales['Hoja1']
-
-    def obtener_credenciales(self):
-        maxi_user = ''
-        maxi_pswd = ''
-        sere_user = '' 
-        sere_pswd = ''
-        bees_user = ''
-        bees_pswd = ''
-        maxi_user = self.ws_credenciales['B2'].value
-        maxi_pswd = cryptocode.decrypt(self.ws_credenciales['C2'].value, 'ilporco')
-        sere_user = self.ws_credenciales['B3'].value
-        sere_pswd = cryptocode.decrypt(self.ws_credenciales['C3'].value, 'ilporco')
-        bees_user = self.ws_credenciales['B4'].value
-        bees_pswd = cryptocode.decrypt(self.ws_credenciales['C4'].value, 'ilporco')
-        return maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd
-
-    def escribir_credenciales(self, maxi_user, maxi_pswd, sere_user, sere_pswd, bees_user, bees_pswd):
-        self.ws_credenciales['B2'] = maxi_user
-        self.ws_credenciales['C2'] = cryptocode.encrypt(maxi_pswd, 'ilporco')
-        self.ws_credenciales['B3'] = sere_user
-        self.ws_credenciales['C3'] = cryptocode.encrypt(sere_pswd, 'ilporco')
-        self.ws_credenciales['B4'] = bees_user
-        self.ws_credenciales['C4'] = cryptocode.encrypt(bees_pswd, 'ilporco')
-        self.wb_credenciales.save('assets/credenciales.xlsx')
-
-class Administrador_Intermedia:
-    def __init__(self):
-        self.wb = load_workbook('assets/tabla-intermedia.xlsx')
-        self.ws_od = self.wb['Oscar-David']
-        self.ws_and = self.wb['Andina']
-        self.ws_sere = self.wb['La-Serenisima']
-
-    def añadir_articulo(self, sku, ilporco, nombre, codigo, destino:str):
-        data = (
-            sku, ilporco, nombre, codigo
-        )
-            
-            
-        if destino == 'Oscar David':
-            self.ws_od.append(data)
-        elif destino == 'Andina':
-            self.ws_and.append(data)
-        else:
-            self.ws_sere.append(data)
-        self.wb.save('assets/tabla-intermedia.xlsx')
-
-    def quitar_articulo(self, codigo, destino):
-        # Encontramos la fila que contiene el código
-        if destino == 'Oscar David':
-            sheet = self.ws_od
-        elif destino == 'Andina':
-            sheet = self.ws_and
-        else:
-            sheet = self.ws_sere
-        
-        for row in sheet.rows:
-            if row[1].value == codigo:
-                sheet.delete_rows(row[0].row)
-        
-        self.wb.save('assets/tabla-intermedia.xlsx')
-
-    
-        
-
-
-
+    def abrir_planilla_resultado(self):
+        os.system(f'start excel.exe "{os.getcwd()}\\archivos\\{self.nombre_archivo}"')
 

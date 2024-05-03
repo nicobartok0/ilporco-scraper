@@ -30,8 +30,8 @@ serenisima_id_label = tk.StringVar()
 bees_id_label = StringVar()
 nombre_label = tk.StringVar()
 currentarticle = tk.StringVar()
-maxi_user = StringVar()
-maxi_pswd = StringVar()
+user = StringVar()
+pswd = StringVar()
 sere_user = StringVar()
 sere_pswd = StringVar()
 bees_user = StringVar()
@@ -113,6 +113,7 @@ def iniciar_busqueda_de_precios():
 
     if busqueda.get() == False:
         operador.cargar_componentes(name=str(nombre_label.get()), ruta=ruta.get())
+        print(admin_credenciales.obtener_credenciales())
         hilo_operador = Thread(target=operador.inicializar, args=(admin_credenciales.obtener_credenciales(), progresswindow), daemon=True)
         hilo_operador.start()
         
@@ -135,46 +136,29 @@ def abrir_sesion(proveedor:str):
 
 
 
-# Creamos las funciones del menú de opciones
-def cargar_credenciales():
-    administrador = Administrador_de_credenciales()
-    user1, pswd1, user2, pswd2, user3, pswd3 = administrador.obtener_credenciales()
-    maxi_user.set(user1)
-    maxi_pswd.set(pswd1)
-    sere_user.set(user2)
-    sere_pswd.set(pswd2)
-    bees_user.set(user3)
-    bees_pswd.set(pswd3)
-    tkinter.messagebox.showinfo('Credenciales cargadas', 'Credenciales cargadas con éxito desde el archivo local')
 
 def ventana_editar_credenciales():
     ventana_credenciales = tk.Toplevel(root)
     ventana_credenciales.geometry('500x390')
     ventana_credenciales.title('Edición de credenciales')
+    proveedor = ttk.Combobox(ventana_credenciales, values=['MAXICONSUMO', 'LA SERENISIMA', 'BEES'])
+    proveedor.current(0)
+    proveedor.grid(column=3, row=1, padx=10)
     ttk.Label(ventana_credenciales, text='Edición de credenciales').grid(column=1, row=0)
-    ttk.Label(ventana_credenciales, text='Nuevo correo de Maxiconsumo: ').grid(column=0, row=1, pady=10, padx=5)
-    ttk.Label(ventana_credenciales, text='Nueva contraseña de Maxiconsumo: ').grid(column=0, row=2, pady=10, padx=5)
-    ttk.Label(ventana_credenciales, text='Nuevo correo de La Serenísima: ').grid(column=0, row=3, pady=10, padx=5)
-    ttk.Label(ventana_credenciales, text='Nueva contraseña de La Serenísima: ').grid(column=0, row=4, pady=10, padx=5)
-    ttk.Label(ventana_credenciales, text='Nuevo correo de Bees (Gral. Alvear): ').grid(column=0, row=5, pady=10, padx=5)
-    ttk.Label(ventana_credenciales, text='Nueva contraseña Bees (Gral. Alvear): ').grid(column=0, row=6, pady=10, padx=5)
-    #ttk.Label(ventana_credenciales, text='Nuevo correo de Bees (San Rafael): ').grid(column=0, row=7, pady=10, padx=5)
-    #ttk.Label(ventana_credenciales, text='Nueva contraseña Bees (San Rafael): ').grid(column=0, row=8, pady=10, padx=5)
-    ttk.Entry(ventana_credenciales, textvariable=new_mu).grid(column=2, row=1)
-    ttk.Entry(ventana_credenciales, textvariable=new_mp, show='*').grid(column=2, row=2)
-    ttk.Entry(ventana_credenciales, textvariable=new_su).grid(column=2, row=3)
-    ttk.Entry(ventana_credenciales, textvariable=new_sp, show='*').grid(column=2, row=4)
-    ttk.Entry(ventana_credenciales, textvariable=new_bau).grid(column=2, row=5)
-    ttk.Entry(ventana_credenciales, textvariable=new_bap, show='*').grid(column=2, row=6)
-    #ttk.Entry(ventana_credenciales, textvariable=new_bsu).grid(column=2, row=7)
-    #ttk.Entry(ventana_credenciales, textvariable=new_bsp, show='*').grid(column=2, row=8)
-    ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales)).grid(column=2, row=9, pady=10)
+    ttk.Label(ventana_credenciales, text='Nuevo usuario: ').grid(column=0, row=2, pady=10, padx=5)
+    ttk.Label(ventana_credenciales, text='Nueva contraseña: ').grid(column=0, row=3, pady=10, padx=5)
+    ttk.Entry(ventana_credenciales, textvariable=user).grid(column=2, row=2)
+    ttk.Entry(ventana_credenciales, textvariable=pswd, show='*').grid(column=2, row=3)
+    ttk.Button(ventana_credenciales, text='Editar credenciales', command=lambda: editar_credenciales(ventana_credenciales=ventana_credenciales, proveedor=proveedor)).grid(column=2, row=4, pady=10)
     
 
 
-def editar_credenciales(ventana_credenciales):
+def editar_credenciales(ventana_credenciales, proveedor):
     administrador = Administrador_de_credenciales()
-    administrador.escribir_credenciales(maxi_user=new_mu.get(), maxi_pswd=new_mp.get(), sere_user=new_su.get(), sere_pswd=new_sp.get(), bees_user=new_bau.get(), bees_pswd=new_bap.get())
+    creds = {
+        proveedor.get(): [user.get(),pswd.get()]
+    }
+    administrador.escribir_credenciales(creds=creds)
     tkinter.messagebox.showinfo('Credenciales Actualizadas', 'Las credenciales han sido actualizadas con éxito en su programa local.')
     ventana_credenciales.destroy()
     
@@ -279,7 +263,6 @@ root.config(menu=menubar)
 opciones_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label='Opciones', menu=opciones_menu)
 # Añadimos las opciones
-opciones_menu.add_command(label='Cargar credenciales', command=cargar_credenciales)
 opciones_menu.add_command(label='Editar credenciales', command=ventana_editar_credenciales)
 opciones_menu.add_command(label='Modificar tabla intermedia', command=ventana_mod_tabla_intermedia)
 opciones_menu.add_command(label='Abrir tabla intermedia', command=abrir_tabla_intermedia)
