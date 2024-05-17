@@ -9,3 +9,4 @@ class Articulo:
         self.fecha = ''
         self.cod_externo = ''
         self.proveedor = proveedor
+        self.proveedor_nombre = ''

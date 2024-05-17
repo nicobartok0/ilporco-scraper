@@ -1,4 +1,4 @@
-import cryptocode
+
 
 class Proveedor:
     def __init__(self, nombre, usuario, password) -> None:
