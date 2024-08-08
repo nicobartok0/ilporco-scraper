@@ -75,6 +75,8 @@ class Sesion_Maxiconsumo(Sesion):
         self.driver.find_element(by='xpath', value='//*[@id="html-body"]/div[2]/div[1]/div[3]/div/div/div[2]/div[2]/a[2]').click()
         time.sleep(1)
         # Luego envía a los campos de "email" el correo electrónico enviado al método y en "pswd" la contraseña.
+        print(f'CREDENCIALES / \n nombre de usuario: {self.username} \ncontraseña: {self.password}')
+        print(cryptocode.decrypt(self.username, 'ilporco'))
         self.driver.find_element(by='xpath', value='//*[@id="email"]').send_keys(self.username)
         self.driver.find_element(by='xpath', value='//*[@id="pass"]').send_keys(cryptocode.decrypt(self.password, 'ilporco'))
         # El driver hace click en el botón de envío de credenciales.

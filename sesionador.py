@@ -1,5 +1,7 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 import time
 import sys, os
 from proveedor import Proveedor
@@ -11,14 +13,20 @@ class Sesionador:
     # Definimos los atributos de nuestro sesionador, que en este caso será la inicialización del Webdriver
     def __init__(self):
         chromedriver_path = f'{os.getcwd()}\\assets\\chromedriver.exe'
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--disable-gpu')
         sys.path.insert(0,chromedriver_path)
+        
+        options = Options()
+        #options.add_argument('--headless')
+        #options.add_argument('--disable-gpu')
+        
+        # Intenta eliminar la línea de sys.path.insert(0, chromedriver_path) si no es necesario
+
         if os.name != 'posix': 
-            self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=options)
-            #self.driver = webdriver.Chrome(executable_path=chromedriver_path)
+            # Configuración del WebDriver usando webdriver_manager
+            self.driver = webdriver.Chrome(options=options)
+            #self.driver = webdriver.Chrome(executable_path=chromedriver_path)  # Esta línea está comentada, así que no debería interferir
         else:
+            # En sistemas POSIX (Linux, macOS), no se necesita especificar el path del chromedriver
             self.driver = webdriver.Chrome()
         self.sesiones = {}
 
