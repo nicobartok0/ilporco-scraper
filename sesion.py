@@ -1,5 +1,7 @@
 import cryptocode
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
@@ -77,10 +79,12 @@ class Sesion_Maxiconsumo(Sesion):
         # Luego envía a los campos de "email" el correo electrónico enviado al método y en "pswd" la contraseña.
         print(f'CREDENCIALES / \n nombre de usuario: {self.username} \ncontraseña: {self.password}')
         print(cryptocode.decrypt(self.username, 'ilporco'))
+        self.driver.implicitly_wait(10)
         self.driver.find_element(by='xpath', value='//*[@id="email"]').send_keys(self.username)
         self.driver.find_element(by='xpath', value='//*[@id="pass"]').send_keys(cryptocode.decrypt(self.password, 'ilporco'))
         # El driver hace click en el botón de envío de credenciales.
-        self.driver.find_element(by='xpath', value='//*[@id="send2"]/span').click()
+        self.driver.find_element(by='xpath', value='//*[@id="send2"]').click()
+        print('Sent')
         time.sleep(3)
         # Obtenemos las cookies y luego identificamos aquella cuyo atributo "name" es "PHPSESSID", que es la cookie
         # de ID de Sesión, y guardamos su valor.

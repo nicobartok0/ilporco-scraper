@@ -50,7 +50,8 @@ class Sesionador:
                         sesion = Sesion_Oscar_David()
 
                     self.sesiones[proveedor.nombre] = sesion
-                      
+        print('Sesiones: ', self.sesiones.keys())
+
     def crear_sesion_manual(self, proveedor:str, sess_id):
         if 'MAXICONSUMO' in proveedor:
             sesion = Sesion_Maxiconsumo(username='', password='')

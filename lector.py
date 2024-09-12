@@ -11,7 +11,7 @@ class Lector:
     def __init__(self, name, ruta):
         self.name = name
         self.wb = load_workbook(ruta, data_only=True)
-        self.ws = self.wb['Hoja1']
+        self.ws = self.wb[self.wb.sheetnames[0]]
         self.intermedia = load_workbook('assets/tabla-intermedia.xlsx')
         self.andina_codesheet = self.intermedia['Andina']
         self.od_codesheet = self.intermedia['Oscar-David']
@@ -101,6 +101,7 @@ class Lector:
             elif self.prov_list[code] == 'SANTO GUILIANO' or self.prov_list[code] == 'ESTEBAN PANELLA':
                 articulo['proveedor'] = 'BEES'
             articulos.append(articulo)
+        
         return articulos
 
     def intercode(self, articulos):

@@ -22,7 +22,7 @@ class Operador:
         nom_proveedores = self.lector.obtener_proveedores()
         for nombre in nom_proveedores:
         
-            if nombre == 'MAXICONSUMO':
+            if 'MAXICONSUMO' in nombre:
                 proveedor = Proveedor(nombre='MAXICONSUMO',usuario=credentials['MAXICONSUMO'][0], password=credentials['MAXICONSUMO'][1])
                 print(f'USUARIO Y PASSWORD: {proveedor.nombre, proveedor.username, proveedor.password}')
                 dist = 'MAXICONSUMO'
